@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anuario Escolar 2026 - Minimal</title>
+    <title>Anuario Escolar 2026 - Promoción 2016</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,55 +16,131 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    aspectRatio: {
+                        '3/4': '3 / 4',
+                        '16/9': '16 / 9',
+                    },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                     },
-                    colors: {
-                        school: {
-                            blue: '#0f172a',
-                            gold: '#fbbf24',
-                            accent: '#3b82f6'
-                        }
-                    }
                 }
             }
         }
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; letter-spacing: -0.01em; transition: background-color 0.3s ease, color 0.3s ease; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            letter-spacing: -0.01em; 
+            overflow-x: hidden;
+            background: #f8fafc;
+        }
+        /* Fondo Animado con Gradiente Fluido */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #f8fafc, #f1f5f9, #e2e8f0, #f8fafc);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+        }
         
-        /* Animación de Revelación */
+        .dark .animated-bg {
+            background: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #020617);
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+
+        .bg-wrapper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: transparent;
+            transition: background 0.5s ease;
+        }
+
+        .blob {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: move 20s infinite alternate;
+            will-change: transform;
+        }
+
+        .blob-2 {
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+            width: 500px; height: 500px;
+            right: -100px; top: -100px;
+            animation-duration: 25s;
+            animation-delay: -5s;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(20%, 20%) scale(1.1); }
+        }
+        
         @keyframes reveal {
-            0% { opacity: 0; transform: translateY(30px); filter: blur(10px); }
-            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        .animate-reveal {
-            animation: reveal 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
+        .animate-reveal { animation: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        
         .animate-reveal-delayed {
             animation: reveal 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
             opacity: 0;
         }
 
-        /* Card Hover Effects */
-        .profile-card img {
-            transition: transform 0.5s ease;
-        }
-        .profile-card:hover img {
-            transform: scale(1.05);
+        .liquid-glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Custom Scrollbar */
+        .liquid-glass-card:hover img {
+            transform: scale(1.08);
+        }
+
+
+        .dark .liquid-glass-card {
+            background: rgba(30, 41, 59, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+      /* Etiquetas con efecto Liquid Glass */
+        .liquid-glass-tag {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .dark .liquid-glass-tag {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        .dark ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-        /* Ajustes para el iframe de Sketchfab */
         .sketchfab-embed-wrapper iframe {
             width: 100%;
             border-radius: 1.5rem;
@@ -72,57 +148,60 @@
         }
     </style>
 </head>
-<body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-300">
+<body class="text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-500">
 
-    <!-- Botón de Modo Oscuro Flotante -->
-    <div class="fixed top-6 right-6 z-50">
-        <button id="themeToggle" class="p-3 bg-slate-100 dark:bg-slate-800 rounded-full shadow-lg hover:scale-110 transition-all border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
-            <!-- Icono Sol (se muestra en dark mode) -->
-            <svg id="sunIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h1M4 12H3m15.364-6.364l.707-.707M6.343 17.657l-.707-.707m12.728 0l-.707.707M6.343 6.343l-.707.707m12.728 12.728L5.636 5.636M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
-            <!-- Icono Luna (se muestra en light mode) -->
-            <svg id="moonIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
-        </button>
+     <!-- Capa de Fondo Animado -->
+    <div class="animated-bg"></div>
+
+    <!-- Contenedor de Manchas/Blobs Animados -->
+    <div class="bg-wrapper">
+        <div class="blob"></div>
+        <div class="blob blob-2"></div>
     </div>
 
-    <!-- Header Minimalista -->
-    <header class="bg-white dark:bg-slate-950 py-24 px-6 border-b border-slate-100 dark:border-slate-900 transition-colors">
-        <div class="max-w-5xl mx-auto text-center">
-            <div class="inline-block px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold tracking-[0.2em] text-slate-500 dark:text-slate-400 uppercase mb-6 animate-reveal">
-                Memoria Digital
+    <nav class="fixed top-6 right-6 z-50 flex gap-3">
+        <button id="themeToggle" class="p-3 bg-white/50 dark:bg-slate-900/50 backdrop-blur-2xl rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all border border-white/50 dark:border-slate-700/50">
+            <svg id="sunIcon" class="w-5 h-5 hidden text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h1M4 12H3m15.364-6.364l.707-.707M6.343 17.657l-.707-.707m12.728 0l-.707.707M6.343 6.343l-.707.707m12.728 12.728L5.636 5.636M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+            <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+        </button>
+    </nav>
+
+    <!-- Header -->
+    <header class="pt-32 pb-16 px-6 text-center">
+        <div class="max-w-5xl mx-auto">
+            <div class="inline-block px-3 py-1 bg-blue-600/10 dark:bg-blue-400/10 rounded-full text-[10px] font-bold tracking-[0.2em] text-blue-600 dark:text-blue-400 uppercase mb-6 animate-reveal">
+                "Sueños Anhelados y Rumbos Infinitos"
             </div>
             <h1 class="text-5xl md:text-8xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 animate-reveal">
-                Anuario <span class="text-blue-600 dark:text-blue-400">2026</span>
+                Promocion <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-emerald-400">2016</span>
             </h1>
             <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium tracking-tight animate-reveal-delayed max-w-2xl mx-auto">
-                Clase inolvidable — <span class="text-slate-900 dark:text-slate-200">Generación del futuro</span>. 
+                ¡Cuánto tiempo sin vernos! Ya pasaron <br class="md:hidden">
+                <span id="timeCounter" class="text-slate-900 dark:text-slate-200 font-bold underline decoration-blue-500/30">Calculando tiempo...</span>
             </p>
         </div>
     </header>
 
     <!-- Barra de Filtros -->
-    <section class="sticky top-0 z-40 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-100 dark:border-slate-900">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div id="filterContainer" class="flex gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
-                <button data-filter="Todos" class="filter-btn px-5 py-2 rounded-lg text-xs font-bold transition-all bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm">TODOS</button>
-                <button data-filter="Estudiante" class="filter-btn px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">ESTUDIANTES</button>
-                <button data-filter="Profesor" class="filter-btn px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">DOCENTES</button>
-            </div>
-            
-            <div class="relative w-full md:w-64">
-                <input 
-                    type="text" 
-                    id="searchInput"
-                    placeholder="Buscar nombre..." 
-                    class="w-full bg-slate-100 dark:bg-slate-900 border-none rounded-xl py-2 pl-4 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-white transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600"
-                >
+    <section class="sticky top-6 z-40 px-4 mb-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="liquid-glass-card rounded-[2rem] p-2 flex flex-col md:flex-row gap-2 items-center">
+                <div class="flex flex-1 gap-1 w-full overflow-x-auto no-scrollbar p-1">
+                    <button data-filter="Todos" class="filter-btn flex-1 px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-md">TODOS</button>
+                    <button data-filter="Estudiante" class="filter-btn flex-1 px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50">ESTUDIANTES</button>
+                    <button data-filter="Profesor" class="filter-btn flex-1 px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50">DOCENTES</button>
+                </div>
+                <div class="relative w-full md:w-64 p-1">
+                    <input type="text" id="searchInput" placeholder="Buscar nombre..." class="w-full bg-white/60 dark:bg-slate-950/40 border border-white/40 dark:border-white/5 rounded-xl py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500/30 text-slate-950 dark:text-white transition-all outline-none">
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Sección de Perfiles -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-20 w-full">
-        <div id="yearbookGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
-            <!-- Renderizado vía JS -->
+    <main class="max-w-7xl mx-auto px-6 pb-24">
+        <div id="yearbookGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            <!-- Render dinámico -->
         </div>
     </main>
 
@@ -138,7 +217,7 @@
                 <div class="col-span-2 row-span-2 group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-video md:aspect-auto">
                     <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Salón Completo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Nuestra Clase Completa - 2026</p>
+                        <p class="text-white font-bold">Nuestra Clase Completa - 2016</p>
                     </div>
                 </div>
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square">
@@ -148,13 +227,13 @@
                     </div>
                 </div>
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square">
-                    <img src="https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80&w=600" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Graduación">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/blob/4d9da2cc332e7b2c1585848ad9802e2dcd3a3382/images/celestina.jpg" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Graduación">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <p class="text-white text-xs font-bold">Ensayos</p>
                     </div>
                 </div>
-                <div class="col-span-2 group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 h-48">
-                    <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=1000" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt="Actividades">
+                <div class="col-span-2 liquid-glass-card group overflow-hidden rounded-[2.5rem] shadow-xl cursor-pointer">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/9240fe6cabf54824b8f42f5a586f2ff7b87975dc/images/Image_5.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
                         <p class="text-white font-bold">Día del Deporte</p>
                     </div>
@@ -163,13 +242,10 @@
         </div>
     </section>
 
-    <!-- SECCIÓN: Visor 3D -->
-    <section class="py-24 px-6 bg-white dark:bg-slate-950 transition-colors">
+    <section class="py-24 px-6 bg-slate-50/50 dark:bg-slate-900/20 transition-colors">
         <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl font-bold tracking-tight mb-2 dark:text-white">Nuestro Uniforme</h2>
-            <p class="text-slate-500 dark:text-slate-400 font-medium mb-12">Explora en 3D nuestra identidad.</p>
-            
-            <div class="sketchfab-embed-wrapper shadow-2xl shadow-blue-500/10 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800">
+            <h2 class="text-3xl font-bold tracking-tight mb-8 dark:text-white">Nuestro Uniforme</h2>
+            <div class="sketchfab-embed-wrapper shadow-2xl shadow-blue-500/10 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 mt-12">
                 <iframe 
                     title="Uniforme_BOP_Model" 
                     frameborder="0" 
@@ -182,7 +258,6 @@
                     src="https://sketchfab.com/models/9c393b6858304df589b9f1eae4fb4e20/embed?camera=0&transparent=1&ui_hint=2">
                 </iframe>
             </div>
-            <p class="mt-6 text-[10px] font-bold text-slate-300 dark:text-slate-600 uppercase tracking-widest">Interactúa con el modelo</p>
         </div>
     </section>
 
@@ -192,39 +267,84 @@
         <button id="closeModal" class="absolute top-8 right-8 text-slate-900 dark:text-white hover:rotate-90 transition-transform duration-300 z-10">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
-        <img id="modalImg" src="" class="relative z-0 max-w-3xl w-full aspect-square bg-slate-50 dark:bg-slate-900 rounded-2xl shadow-2xl scale-95 transition-transform duration-500" alt="Zoom">
+        <img id="modalImg" src="" class="relative z-0 max-w-3xl w-full aspect-square bg-slate-50 dark:bg-slate-900 rounded-2xl shadow-2xl scale-95 transition-transform duration-500 object-contain" alt="Zoom">
     </div>
 
-    <!-- Footer -->
     <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 py-16 px-6 text-center md:text-left">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
             <div>
-                <h3 class="text-lg font-bold tracking-tight dark:text-white">Anuario Escolar Digital</h3>
-                <p class="text-slate-400 dark:text-slate-500 text-sm">Diseñado para la eternidad. 2026.</p>
-            </div>
-            <div class="flex gap-8">
-                <span class="text-[10px] font-bold tracking-widest text-slate-300 dark:text-slate-700 uppercase">Privacidad</span>
-                <span class="text-[10px] font-bold tracking-widest text-slate-300 dark:text-slate-700 uppercase">Contacto</span>
+                <h3 class="text-lg font-bold tracking-tight dark:text-white">Recordatorio Escolar Digital</h3>
+                <p class="text-slate-400 dark:text-slate-500 text-sm">Diseñado para la eternidad. Todos los derechos reservados 2019.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        const GITHUB_BASE_URL = "https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/";
+        
         const integrantes = [
-            { id: 1, nombre: "Sofía Martínez", nacimiento: "2008-03-12", rol: "Estudiante", cita: "El futuro pertenece a quienes creen en la belleza de sus sueños.", hobby: "Robótica y Literatura", seed: "Sofia" },
-            { id: 2, nombre: "Carlos Mendoza", nacimiento: "2007-11-25", rol: "Estudiante", cita: "No es un adiós, es un hasta luego. ¡Nos vemos en la cima!", hobby: "Fútbol y Videojuegos", seed: "Carlos" },
-            { id: 3, nombre: "Prof. Elena Valdés", nacimiento: "1985-06-15", rol: "Profesor", cita: "La educación es el arma más poderosa para cambiar el mundo.", hobby: "Historia y Jardinería", seed: "Elena" },
-            { id: 4, nombre: "Javier López", nacimiento: "2008-01-05", rol: "Estudiante", cita: "Dormir menos, vivir más... pero en clase no se duerme.", hobby: "Música y Skate", seed: "Javier" },
-            { id: 5, nombre: "Valentina Rojas", nacimiento: "2008-08-14", rol: "Estudiante", cita: "Aprendí más de mis errores que de mis exámenes perfectos.", hobby: "Pintura al óleo", seed: "Valentina" },
-            { id: 6, nombre: "Dir. Roberto Gómez", nacimiento: "1978-04-22", rol: "Profesor", cita: "El respeto y la disciplina son los pilares del éxito.", hobby: "Ajedrez", seed: "Roberto" },
-            { id: 7, nombre: "Camila Silva", nacimiento: "2007-09-30", rol: "Estudiante", cita: "Sobrevivimos al cálculo, podemos sobrevivir a todo.", hobby: "Banda escolar", seed: "Camila" },
-            { id: 8, nombre: "Mateo Herrera", nacimiento: "2008-05-22", rol: "Estudiante", cita: "Si me buscas, estoy en la cafetería.", hobby: "Programación web", seed: "Mateo" }
+             { id: 1, nombre: "Prof. Amstron Juan de D.", nacimiento: "1975-06-15", rol: "Profesor", cita: "Trabaja no para un aplauso, si no para una causa, vive la vida para expresae, no para impresionar.", hobby: "Lectura", foto: "amstron.jpg", seed: "3" },
+            { id: 2, nombre: "Allcca H, Elvis", nacimiento: "2000-08-02", rol: "Estudiante", cita: "El futuro pertenece a quienes creen en la belleza de sus sueños.", hobby: "Ver Television", foto: "elvis.jpg", seed: "Sofia" },
+            { id: 3, nombre: "Amable Q, Luis F.", nacimiento: "2000-03-01", rol: "Estudiante", cita: "No es un adiós, es un hasta luego. ¡Nos vemos en la cima!", hobby: "Leer y estudiar", foto: "luis.jpg", seed: "Carlos" },
+            { id: 4, nombre: "Carbajal F, Juan C.", nacimiento: "2000-09-23", rol: "Estudiante", cita: "Sin miedo al éxito.", hobby: "Jugar Dota", foto: "juan.jpg", seed: "4" },
+            { id: 5, nombre: "Ccasa C, Yessenia M.", nacimiento: "2000-07-11", rol: "Estudiante", cita: "Pinceladas de vida.", hobby: "Escuchar musica", foto: "yessenia.jpg", seed: "5" },
+            { id: 6, nombre: "Ccorimanya P, Rusbel C.", nacimiento: "1999-07-19", rol: "Estudiante", cita: "Programando sueños.", hobby: "Jugar Futbol", foto: "rusbel.jpg", seed: "6" },
+            { id: 7, nombre: "Ccorimanya P, Roger M.", nacimiento: "1998-09-12", rol: "Estudiante", cita: "Viviendo al máximo.", hobby: "Jugar Futbol", foto: "roger.jpg", seed: "7" },
+            { id: 8, nombre: "Diaz A, Franklin Y.", nacimiento: "1999-10-28", rol: "Estudiante", cita: "Persistencia siempre.", hobby: "Ver Television", foto: "franklin.jpg", seed: "8" },
+            { id: 9, nombre: "Flores V, Kely M.", nacimiento: "1999-04-04", rol: "Estudiante", cita: "Sonríe siempre.", hobby: "Musica y leer", foto: "monica.jpg", seed: "9" },
+            { id: 10, nombre: "Gonzales V, Cesar", nacimiento: "1999-08-04", rol: "Estudiante", cita: "Meta tras meta.", hobby: "Jugar Futbol", foto: "cesar.jpg", seed: "10" },
+            { id: 11, nombre: "Huaman C, Celestina", nacimiento: "1998-09-07", rol: "Estudiante", cita: "Creer es crear.", hobby: "jugar Futbol", foto: "celestina.jpg", seed: "11" },
+            { id: 12, nombre: "Human M, Mari L.", nacimiento: "1999-07-08", rol: "Estudiante", cita: "Nuevos horizontes.", hobby: "Escuchar muica", foto: "mary.jpg", seed: "12" },
+            { id: 13, nombre: "Human Q, Max A.", nacimiento: "1999-07-14", rol: "Estudiante", cita: "Amo aprender.", hobby: "Jugar Futbol", foto: "max.jpg", seed: "13" },
+            { id: 14, nombre: "Huaman R, Richard", nacimiento: "1999-08-06", rol: "Estudiante", cita: "Pasión por todo.", hobby: "Salir con amigos", foto: "richard.jpg", seed: "14" },
+            { id: 15, nombre: "Huarcaya O, Ronaldo", nacimiento: "1999-09-17", rol: "Estudiante", cita: "Luz propia.", hobby: "Jugar Futbol", foto: "ronaldo.jpg", seed: "15" },
+            { id: 16, nombre: "Huaylla Q, Williams M.", nacimiento: "1999-08-29", rol: "Estudiante", cita: "Aventurero.", hobby: "Jugar futbol", foto: "williams.jpg", seed: "16" },
+            { id: 17, nombre: "Laura O, Naira", nacimiento: "1999-08-07", rol: "Estudiante", cita: "Fuerza y fe.", hobby: "Cantar y Bailar", foto: "naira.jpg", seed: "17" },
+            { id: 18, nombre: "Maycalla Q, Liz", nacimiento: "1999-01-24", rol: "Estudiante", cita: "Todo fluye.", hobby: "Jugar Futbol", foto: "liz.jpg", seed: "18" },
+            { id: 19, nombre: "Orosco M, Yasmin S.", nacimiento: "1999-09-08", rol: "Estudiante", cita: "Pura vida.", hobby: "Cantar y Musica", foto: "yasmin.jpg", seed: "19" },
+            { id: 20, nombre: "Oscco M, Victor R.", nacimiento: "1999-07-18", rol: "Estudiante", cita: "Asi es la vida mijo.", hobby: "Dibujar y leer", foto: "victor.jpg", seed: "20" },
+            { id: 21, nombre: "Oscco Q, Emerson", nacimiento: "1999-03-28", rol: "Estudiante", cita: "Energía positiva.", hobby: "Jugar Futbol", foto: "emerson.jpg", seed: "21" },
+            { id: 22, nombre: "Oscco R, Rosalinda", nacimiento: "1999-07-04", rol: "Estudiante", cita: "Justicia y honor.", hobby: "jugar Futbol", foto: "rosa.jpg", seed: "22" },
+            { id: 23, nombre: "Padilla Ll,Denis", nacimiento: "1999-01-05", rol: "Estudiante", cita: "Brilla fuerte.", hobby: "Jugar Futbol", foto: "denis.jpg", seed: "23" },
+            { id: 24, nombre: "Peceros C, Thomas S.", nacimiento: "1999-08-05", rol: "Estudiante", cita: "Imparable.", hobby: "Jugar Dota", foto: "thomas.jpg", seed: "24" },
+            { id: 25, nombre: "Quispe G, Janeth", nacimiento: "1999-09-15", rol: "Estudiante", cita: "Libre.", hobby: "Ver Facebook", foto: "janeth.jpg", seed: "25" },
+            { id: 26, nombre: "Rivas P, Jhon G", nacimiento: "2001-07-29", rol: "Profesor", cita: "Inicios.", hobby: "Caminar", foto: null, seed: "26" },
+            { id: 27, nombre: "Saca P, Clinton G.", nacimiento: "2000-08-12", rol: "Estudiante", cita: "Nunca dejen de dudar.", hobby: "Jugar Futbol", foto: "clinton.jpg", seed: "27" },
+            { id: 28, nombre: "Sanchez R, Matilde W.", nacimiento: "1999-08-18", rol: "Estudiante", cita: "La gramática es vida.", hobby: "Musica y salir", foto: "wayta.jpg", seed: "28" },
+            { id: 29, nombre: "Tito C, luz M.", nacimiento: "1999-04-24", rol: "Estudiante", cita: "La gramática es vida.", hobby: "Escuchar musica", foto: "luz.jpg", seed: "29" },
+            { id: 30, nombre: "Vasquez M, Yuber I.", nacimiento: "1999-04-25", rol: "Estudiante", cita: "La gramática es vida.", hobby: "Jugar Futbol", foto: "yuber.jpg", seed: "30" }
         ];
-
         let currentFilter = 'Todos';
         let currentSearch = '';
 
-        // Manejo de Modo Oscuro
+        function actualizarContador() {
+            const fechaInicio = new Date(2016, 11, 23); 
+            const fechaActual = new Date();
+            
+            let years = fechaActual.getFullYear() - fechaInicio.getFullYear();
+            let months = fechaActual.getMonth() - fechaInicio.getMonth();
+            let days = fechaActual.getDate() - fechaInicio.getDate();
+
+            if (days < 0) {
+                months--;
+                const ultimoMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 0);
+                days += ultimoMes.getDate();
+            }
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            document.getElementById('timeCounter').innerText = `${years} años, ${months} meses y ${days} días`;
+        }
+
+
+        function formatearCumple(fechaStr) {
+            const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+            const fecha = new Date(fechaStr + "T00:00:00");
+            return `${fecha.getDate()} de ${meses[fecha.getMonth()]}`;
+        }
+
         const themeToggle = document.getElementById('themeToggle');
         const sunIcon = document.getElementById('sunIcon');
         const moonIcon = document.getElementById('moonIcon');
@@ -239,7 +359,6 @@
 
         themeToggle.addEventListener('click', toggleDarkMode);
 
-        // Inicializar tema
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
             sunIcon.classList.remove('hidden');
@@ -266,28 +385,57 @@
             });
 
             filtrados.forEach((p, index) => {
-                const avatarStyle = p.rol === 'Profesor' ? 'bottts' : 'avataaars';
-                const avatarUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${p.seed}&backgroundColor=f1f5f9`;
+                const avatar = p.rol === 'Profesor' ? 'bottts' : 'avataaars';
+                const fallback = `https://api.dicebear.com/7.x/${avatar}/svg?seed=${p.seed}`;
+                const imageUrl = p.foto ? GITHUB_BASE_URL + p.foto : fallback;
                 
-                const card = `
-                    <article class="profile-card group flex flex-col bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[1.5rem] sm:rounded-[2.5rem] p-3 sm:p-4 hover:border-blue-100 dark:hover:border-blue-900 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-500 animate-reveal" style="animation-delay: ${index * 100}ms">
-                        <div class="relative overflow-hidden rounded-[1.2rem] sm:rounded-[1.8rem] aspect-square mb-4 sm:mb-6 bg-slate-50 dark:bg-slate-800">
-                            <img src="${avatarUrl}" class="w-full h-full object-cover cursor-zoom-in" onclick="openZoom('${avatarUrl}')" alt="${p.nombre}">
-                            <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[7px] sm:text-[9px] font-black tracking-widest text-slate-800 dark:text-slate-200 uppercase">
+                grid.innerHTML += `
+                     <article class="liquid-glass-card rounded-[1.2rem] md:rounded-[2.5rem] p-3 md:p-5 animate-reveal" style="animation-delay: ${index * 50}ms">
+                        <div class="relative overflow-hidden rounded-[0.8rem] md:rounded-[1.8rem] aspect-3/4 mb-3 md:mb-5 bg-slate-100 dark:bg-slate-800">
+                            <img src="${imageUrl}" onerror="this.src='${fallback}'" 
+                                 class="w-full h-full object-cover cursor-zoom-in transition-transform duration-500 hover:scale-110" 
+                                 onclick="openZoom('${imageUrl}')">
+                            <div class="liquid-glass-tag absolute top-3 right-3 px-3 py-1 rounded-[9px] text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-100">
                                 ${p.rol}
                             </div>
                         </div>
-                        <div class="px-1 sm:px-2 flex-grow">
-                            <h3 class="font-bold text-base sm:text-xl text-slate-900 dark:text-white tracking-tight mb-1 truncate">${p.nombre}</h3>
-                            <p class="text-[8px] sm:text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-widest mb-1 sm:mb-2">${calcularEdad(p.nacimiento)} AÑOS</p>
-                            <p class="text-[9px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium mb-3 sm:mb-4 italic truncate">Hobbies: ${p.hobby}</p>
-                            <p class="text-slate-500 dark:text-slate-400 text-[10px] sm:text-sm leading-snug sm:leading-relaxed mb-4 font-medium italic">"${p.cita}"</p>
+                        
+                        <div class="px-2 flex-grow">
+                            <h3 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight mb-1 truncate">${p.nombre}</h3>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-[10px] font-bold text-green-700 dark:text-green-200 uppercase tracking-widest">${calcularEdad(p.nacimiento)} AÑOS</span>
+                                <span class="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
+                                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider truncate">${p.hobby}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
+                                <p class="text-[8px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider leading-none">Cumpleaños: ${formatearCumple(p.nacimiento)}
+                                </p>
+                            </div> 
+                            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium italic">"${p.cita}"</p>
                         </div>
                     </article>
                 `;
-                grid.insertAdjacentHTML('beforeend', card);
             });
         }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                currentFilter = btn.dataset.filter;
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-950', 'dark:text-white', 'shadow-md');
+                    b.classList.add('text-slate-500');
+                });
+                btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-950', 'dark:text-white', 'shadow-md');
+                btn.classList.remove('text-slate-500');
+                render();
+            };
+        });
+
+        document.getElementById('searchInput').oninput = (e) => {
+            currentSearch = e.target.value;
+            render();
+        };
 
         function openZoom(url) {
             const modal = document.getElementById('zoomModal');
@@ -307,28 +455,13 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
                 document.body.style.overflow = 'auto';
-            }, 300);
+            }, 300); 
         };
 
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            currentSearch = e.target.value;
+        window.onload = () => {
+            actualizarContador();
             render();
-        });
-
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.onclick = () => {
-                currentFilter = btn.dataset.filter;
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-900', 'dark:text-white', 'shadow-sm');
-                    b.classList.add('text-slate-500', 'dark:text-slate-400');
-                });
-                btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-900', 'dark:text-white', 'shadow-sm');
-                btn.classList.remove('text-slate-500', 'dark:text-slate-400');
-                render();
-            };
-        });
-
-        window.onload = render;
+        };
     </script>
 </body>
 </html>
