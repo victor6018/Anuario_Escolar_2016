@@ -43,13 +43,13 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(-45deg, #f8fafc, #f1f5f9, #e2e8f0, #f8fafc);
+            background: linear-gradient(-45deg, #c0deff, #ffffff, #e2e8f0, #fdf1f7);
             background-size: 400% 400%;
             animation: gradientMove 15s ease infinite;
         }
         
         .dark .animated-bg {
-            background: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #020617);
+            background: linear-gradient(-45deg, #0d122c, #000000, #1e293b, #4c2838);
             background-size: 400% 400%;
         }
 
@@ -146,6 +146,22 @@
             border-radius: 1.5rem;
             background: transparent;
         }
+
+        /* Animación optimizada para formato panorámico 2560x1139 */
+        .group-photo-container img {
+            animation: kenburns-corners 35s ease-in-out infinite alternate;
+            transform-origin: center;
+        }
+
+        
+        @keyframes kenburns-corners {
+            0% { transform: scale(1) translate(0, 0); }
+            20% { transform: scale(1.8) translate(-19%, -12%); } /* Esquina Superior Izquierda */
+            40% { transform: scale(1.8) translate(19%, -12%); }  /* Esquina Superior Derecha */
+            60% { transform: scale(1.7) translate(0, 0); }       /* Zoom profundo al Centro */
+            80% { transform: scale(1.8) translate(-12%, 19%); }  /* Esquina Inferior Izquierda */
+            100% { transform: scale(1.8) translate(12%, 19%); }  /* Esquina Inferior Derecha */
+        }
     </style>
 </head>
 <body class="text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-500">
@@ -205,34 +221,63 @@
         </div>
     </main>
 
+        <!-- Nueva Sección: Foto Grupal -->
+        <section>
+        <!-- Sección: Foto Grupal Panorámica -->
+        <div class="max-w-6xl mx-auto animate-reveal" style="animation-delay: 400ms;">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-4xl font-black tracking-tight mb-2 uppercase">Recuerdo Grupal</h2>
+                <div class="h-1 w-20 bg-blue-600 mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="liquid-glass-card rounded-[2rem] md:rounded-[3rem] p-3 md:p-6 overflow-hidden">
+                <!-- Cambiado de aspect-video (16:9) a aspect-pano (proporción real) -->
+                <div class="group-photo-container relative aspect-pano rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-inner">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_2.jpg" 
+                         alt="Foto de Promoción 2016"
+                         class="w-full h-full object-cover"
+                         onerror="this.src='https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1470&auto=format&fit=crop'">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6 md:p-10 pointer-events-none">
+                        <div>
+                            <p class="text-white/70 text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] mb-1">Diciembre 2016</p>
+                            <!--<h3 class="text-white text-xl md:text-4xl font-black italic">"Diciembre 2016"</h3>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- SECCIÓN: Galería de Recuerdos -->
-    <section class="bg-slate-50 dark:bg-slate-900/50 py-24 px-6 border-y border-slate-100 dark:border-slate-900">
+    <section class="bg-slate-50/50 dark:bg-slate-900/20 transition-colors py-10 px-6">
         <div class="max-w-6xl mx-auto">
             <div class="mb-16 text-center md:text-left">
                 <h2 class="text-3xl font-bold tracking-tight mb-2 dark:text-white">Momentos Inolvidables</h2>
                 <p class="text-slate-500 dark:text-slate-400 font-medium">Fotos de grupo y actividades especiales.</p>
             </div>
 
-            <div class="grid grid-cols-4 md:grid-cols-4 gap-4">
-
+            <div class="grid grid-cols-4 md:grid-cols-4 gap-4 ">
                 <div class="col-span-4 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_3.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_1.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Nuestra Clase Completa - 2016</p>
+                        <p class="text-white font-bold">Día del Deporte</p>
                     </div>
                 </div>
 
+                <!--
                 <div class="col-span-2 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_4.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Salón Completo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
                         <p class="text-white font-bold">Fotos - 2016</p>
                     </div>
                 </div>
+                -->
                 
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_5.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_4.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Paseo de Verano</p>
+                        <p class="text-white text-xs font-bold">Deportes</p>
                     </div>
                 </div>
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
@@ -249,7 +294,7 @@
                         <p class="text-white font-bold">Día del Deporte</p>
                     </div>
                 </div>
-                -->
+              
 
                 <div class="col-span-2 liquid-glass-card group overflow-hidden rounded-[2.5rem] shadow-xl cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_1.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
@@ -257,38 +302,41 @@
                         <p class="text-white font-bold">Día del Deporte</p>
                     </div>
                 </div>
+            -->
 
 
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-auto cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_7.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Paseo de Verano</p>
+                        <p class="text-white text-xs font-bold">Deportes</p>
                     </div>
                 </div>
 
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_8.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Paseo de Verano</p>
+                        <p class="text-white text-xs font-bold">Deportes</p>
                     </div>
                 </div>
 
 
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_9.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Salón Completo">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_15.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Salón Completo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Fotos - 2016</p>
+                        <p class="text-white font-bold">Deportes</p>
                     </div>
                 </div>
 
+                <!--
                 <div class="col-span-2 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_14.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <p class="text-white text-xs font-bold">Paseo de Verano</p>
                     </div>
                 </div>
+                -->
                 <div class="col-span-2 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_15.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Graduación">
+                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_9.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Graduación">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <p class="text-white text-xs font-bold">Deportes</p>
                     </div>
@@ -307,13 +355,13 @@
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_12.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Paseo de Verano</p>
+                        <p class="text-white text-xs font-bold">Deportes</p>
                     </div>
                 </div>
                 <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
                     <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_13.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Paseo de Verano</p>
+                        <p class="text-white text-xs font-bold">Deportes</p>
                     </div>
                 </div>
 
@@ -321,7 +369,7 @@
         </div>
     </section>
 
-    <section class="py-24 px-6 bg-slate-50/50 dark:bg-slate-900/20 transition-colors">
+    <section class="px-6 bg-slate-50/50 dark:bg-slate-900/20 transition-colors">
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-3xl font-bold tracking-tight mb-8 dark:text-white">Nuestro Uniforme</h2>
             <div class="sketchfab-embed-wrapper shadow-2xl shadow-blue-500/10 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 mt-12">
@@ -362,7 +410,7 @@
         const GITHUB_BASE_URL = "https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/";
         
         const integrantes = [
-             { id: 1, nombre: "Prof. Amstron Juan de D.", nacimiento: "1975-06-15", rol: "Profesor", cita: "Trabaja no para un aplauso, si no para una causa, vive la vida para expresae, no para impresionar.", hobby: "Lectura", foto: "amstron.jpg", seed: "3" },
+             { id: 1, nombre: "Prof. Amstron Juan de D.", nacimiento: "1975-06-15", rol: "Prof.", cita: "Trabaja no para un aplauso, si no para una causa, vive la vida para expresae, no para impresionar.", hobby: "Lectura", foto: "amstron.jpg", seed: "3" },
             { id: 2, nombre: "Allcca H, Elvis", nacimiento: "2000-08-02", rol: "Estudiante", cita: "El futuro pertenece a quienes creen en la belleza de sus sueños.", hobby: "Ver Television", foto: "elvis.jpg", seed: "Sofia" },
             { id: 3, nombre: "Amable Q, Luis F.", nacimiento: "2000-03-01", rol: "Estudiante", cita: "No es un adiós, es un hasta luego. ¡Nos vemos en la cima!", hobby: "Leer y estudiar", foto: "luis.jpg", seed: "Carlos" },
             { id: 4, nombre: "Carbajal F, Juan C.", nacimiento: "1999-09-23", rol: "Estudiante", cita: "Sin miedo al éxito.", hobby: "Jugar Dota", foto: "juan.jpg", seed: "4" },
@@ -381,13 +429,13 @@
             { id: 17, nombre: "Laura O, Naira", nacimiento: "1998-08-07", rol: "Estudiante", cita: "Fuerza y fe.", hobby: "Cantar y Bailar", foto: "naira.jpg", seed: "17" },
             { id: 18, nombre: "Maycalla Q, Liz", nacimiento: "1999-01-24", rol: "Estudiante", cita: "Todo fluye.", hobby: "Jugar Futbol", foto: "liz.jpg", seed: "18" },
             { id: 19, nombre: "Orosco M, Yasmin S.", nacimiento: "1999-09-13", rol: "Estudiante", cita: "Pura vida.", hobby: "Cantar y Musica", foto: "yasmin.jpg", seed: "19" },
-            { id: 20, nombre: "Oscco M, Victor R.", nacimiento: "1999-07-18", rol: "Estudiante", cita: "Asi es la vida mijo.", hobby: "Dibujar y leer", foto: "victor.jpg", seed: "20" },
+            { id: 20, nombre: "Oscco Mallma, Victor Raul", nacimiento: "1999-07-18", rol: "Estudiante", cita: "Asi es la vida mijo.", hobby: "Dibujar y leer", foto: "victor.jpg", seed: "20" },
             { id: 21, nombre: "Oscco Q, Emerson", nacimiento: "1999-03-28", rol: "Estudiante", cita: "Energía positiva.", hobby: "Jugar Futbol", foto: "emerson.jpg", seed: "21" },
             { id: 22, nombre: "Oscco R, Rosalinda", nacimiento: "1999-07-04", rol: "Estudiante", cita: "Justicia y honor.", hobby: "jugar Futbol", foto: "rosa.jpg", seed: "22" },
             { id: 23, nombre: "Padilla Ll,Denis", nacimiento: "1999-01-05", rol: "Estudiante", cita: "Brilla fuerte.", hobby: "Jugar Futbol", foto: "denis.jpg", seed: "23" },
             { id: 24, nombre: "Peceros C, Thomas S.", nacimiento: "2000-08-05", rol: "Estudiante", cita: "Imparable.", hobby: "Jugar Dota", foto: "thomas.jpg", seed: "24" },
             { id: 25, nombre: "Quispe G, Janeth", nacimiento: "1999-09-15", rol: "Estudiante", cita: "Libre.", hobby: "Ver Facebook", foto: "janeth.jpg", seed: "25" },
-            { id: 26, nombre: "Rivas P, Jhon G", nacimiento: "2001-07-29", rol: "Profesor", cita: "Inicios.", hobby: "Caminar", foto: null, seed: "26" },
+            { id: 26, nombre: "Rivas P, Jhon G", nacimiento: "2001-07-29", rol: "Prof.", cita: "Inicios.", hobby: "Caminar", foto: null, seed: "26" },
             { id: 27, nombre: "Saca P, Clinton G.", nacimiento: "2000-08-12", rol: "Estudiante", cita: "Nunca dejen de dudar.", hobby: "Jugar Futbol", foto: "clinton.jpg", seed: "27" },
             { id: 28, nombre: "Sanchez R, Matilde W.", nacimiento: "1998-08-18", rol: "Estudiante", cita: "La gramática es vida.", hobby: "Musica y salir", foto: "wayta.jpg", seed: "28" },
             { id: 29, nombre: "Tito C, luz M.", nacimiento: "1998-04-24", rol: "Estudiante", cita: "La gramática es vida.", hobby: "Escuchar musica", foto: "luz.jpg", seed: "29" },
@@ -464,7 +512,7 @@
             });
 
             filtrados.forEach((p, index) => {
-                const avatar = p.rol === 'Profesor' ? 'bottts' : 'avataaars';
+                const avatar = p.rol === 'Prof.' ? 'bottts' : 'avataaars';
                 const fallback = `https://api.dicebear.com/7.x/${avatar}/svg?seed=${p.seed}`;
                 const imageUrl = p.foto ? GITHUB_BASE_URL + p.foto : fallback;
                 
@@ -480,7 +528,12 @@
                         </div>
                         
                         <div class="px-2 flex-grow">
-                            <h3 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight mb-1 truncate">${p.nombre}</h3>
+                            <!--<h3 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight mb-1 truncate">${p.nombre}</h3>
+                            AJUSTE: Nombres sin truncar y con tamaño adaptativo -->
+
+                            <h3 class="font-bold text-[13px] md:text-lg leading-tight text-slate-900 dark:text-white mb-1">
+                                ${p.nombre}
+                            </h3>
                             <div class="flex items-center gap-2 mb-3">
                                 <span class="text-[10px] font-bold text-green-700 dark:text-green-200 uppercase tracking-widest">${calcularEdad(p.nacimiento)} AÑOS</span>
                                 <span class="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
