@@ -1,1 +1,516 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspoFinance - farithsac Cloud</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS para Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-active { background-color: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Loading State -->
+    <div id="loading-overlay">
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="font-bold text-slate-600 italic">Conectando a farithsac Cloud...</p>
+        <p id="loading-subtext" class="text-xs text-slate-400 mt-2">Verificando configuración de seguridad</p>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-slate-900 text-white hidden lg:flex flex-col">
+            <div class="p-8">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-500 p-2 rounded-lg">
+                        <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
+                    </div>
+                    <h1 class="text-xl font-bold tracking-tight">Farith<span class="text-blue-400">SAC</span></h1>
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-2">
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all nav-active" id="btn-dashboard">
+                    <i data-lucide="layout-grid"></i> Dashboard
+                </button>
+                <button onclick="switchTab('forms')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800" id="btn-forms">
+                    <i data-lucide="plus-circle"></i> Nueva Operación
+                </button>
+                <button onclick="switchTab('data')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800" id="btn-data">
+                    <i data-lucide="table-properties"></i> Registro Diario
+                </button>
+            </nav>
+
+            <div class="p-6 mt-auto">
+                <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Base de Datos</p>
+                    <div class="flex items-center justify-between">
+                        <span id="cloud-status" class="text-xs text-emerald-400 flex items-center gap-1">
+                            <span id="status-indicator" class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> 
+                            <span id="status-text">Online</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar">
+            <!-- Header -->
+            <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex justify-between items-center">
+                <div>
+                    <h2 id="page-heading" class="text-xl font-bold text-slate-900">Resumen General</h2>
+                    <p class="text-xs text-slate-500" id="current-date"></p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportToExcel()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg">
+                        <i data-lucide="file-down" class="w-4 h-4"></i> Exportar Excel
+                    </button>
+                </div>
+            </header>
+
+            <div class="p-8 space-y-8 max-w-[1400px] mx-auto">
+                
+                <!-- DASHBOARD TAB -->
+                <section id="dashboard" class="tab-content active space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="glass-card p-6 rounded-3xl border-l-4 border-blue-500">
+                            <p class="text-slate-500 text-sm font-medium">Total DEBE (Ingresos)</p>
+                            <h3 id="stat-ingresos" class="text-3xl font-black mt-2 text-blue-600">$0.00</h3>
+                        </div>
+                        <div class="glass-card p-6 rounded-3xl border-l-4 border-rose-500">
+                            <p class="text-slate-500 text-sm font-medium">Total HABER (Gastos)</p>
+                            <h3 id="stat-gastos" class="text-3xl font-black mt-2 text-rose-600">$0.00</h3>
+                        </div>
+                        <div class="glass-card p-6 rounded-3xl border-l-4 border-amber-500">
+                            <p class="text-slate-500 text-sm font-medium">Deuda Total</p>
+                            <h3 id="stat-deudas" class="text-3xl font-black mt-2 text-amber-600">$0.00</h3>
+                        </div>
+                        <div class="glass-card p-6 rounded-3xl bg-slate-900 text-white">
+                            <p class="text-slate-400 text-sm font-medium">Saldo Neto</p>
+                            <h3 id="stat-balance" class="text-3xl font-black mt-2">$0.00</h3>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 glass-card p-8 rounded-3xl h-[450px]">
+                            <h4 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="bar-chart-3" class="text-blue-500"></i> Histórico Debe vs Haber</h4>
+                            <div class="h-full pb-10">
+                                <canvas id="chartMain"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card p-8 rounded-3xl h-[450px]">
+                            <h4 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="pie-chart" class="text-rose-500"></i> Distribución de Haber</h4>
+                            <div class="h-full pb-10">
+                                <canvas id="chartPie"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FORMS TAB -->
+                <section id="forms" class="tab-content">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="glass-card p-10 rounded-[2.5rem] border-2 border-white shadow-2xl">
+                            <div class="mb-8 text-center">
+                                <h3 class="text-2xl font-black text-slate-900">Registrar Movimiento</h3>
+                                <p class="text-slate-500 italic text-sm">Los datos se guardarán en la instancia farithsac</p>
+                            </div>
+
+                            <form id="mainForm" class="space-y-6">
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest text-center">Fecha</label>
+                                        <input type="date" id="f_date" required class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all text-center">
+                                    </div>
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Categoría</label>
+                                        <select id="f_category" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all">
+                                            <option value="FLETE">FLETE</option>
+                                            <option value="COMBUSTIBLE">COMBUSTIBLE</option>
+                                            <option value="MECANICO">MECANICO</option>
+                                            <option value="REPUESTO">REPUESTO</option>
+                                            <option value="PEAJE">PEAJE</option>
+                                            <option value="CARGA">CARGA</option>
+                                            <option value="DEUDA">DEUDA</option>
+                                            <option value="OTROS">OTROS</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Tipo de Cuenta</label>
+                                        <select id="f_type" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all">
+                                            <option value="ingreso">DEBE (Ingreso)</option>
+                                            <option value="gasto">HABER (Gasto)</option>
+                                            <option value="deuda">DEUDA (Pasivo)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest text-center">Monto Principal ($)</label>
+                                        <input type="number" id="f_amount" step="0.01" required placeholder="0.00" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 font-bold text-2xl text-center">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Detalles / Descripción</label>
+                                        <textarea id="f_details" rows="3" placeholder="Descripción..." class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all"></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" id="submit-btn" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-black transition-all transform active:scale-[0.98] shadow-xl flex items-center justify-center gap-3">
+                                    <i data-lucide="save" class="w-5 h-5"></i> Confirmar Registro
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DATA TAB -->
+                <section id="data" class="tab-content">
+                    <div class="glass-card rounded-[2rem] overflow-hidden border border-slate-200">
+                        <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center">
+                            <h4 class="font-bold text-slate-800">Libro Contable Diario</h4>
+                            <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Sincronizado farithsac</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                                    <tr>
+                                        <th class="p-5">Fecha</th>
+                                        <th class="p-5">Categoría</th>
+                                        <th class="p-5">Detalles</th>
+                                        <th class="p-5 text-right text-blue-600">DEBE</th>
+                                        <th class="p-5 text-right text-rose-600">HABER</th>
+                                        <th class="p-5 text-right text-amber-600">DEUDA</th>
+                                        <th class="p-5 text-center">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Dinámico -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 translate-y-32 opacity-0 transition-all duration-500 z-50">
+        <div id="toast-icon" class="bg-emerald-500 p-1.5 rounded-full"><i data-lucide="check" class="w-4 h-4"></i></div>
+        <p id="toast-msg" class="font-bold text-sm">Acción completada</p>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // CONFIGURACIÓN DE TU PROYECTO FARITHSAC
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbIENNh42nNLsbolRtnl0ro0o0x_m6Dhk",
+            authDomain: "farithsac.firebaseapp.com",
+            projectId: "farithsac",
+            storageBucket: "farithsac.firebasestorage.app",
+            messagingSenderId: "319668304885",
+            appId: "1:319668304885:web:17886ec95f4ee7b69f7ebc",
+            measurementId: "G-KKNJPDLB3P"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'farithsac-v1';
+
+        let transactions = [];
+        let chartMain, chartPie;
+        let currentUser = null;
+        let isCloudDisabled = false;
+
+        async function init() {
+            lucide.createIcons();
+            document.getElementById('current-date').innerText = new Intl.DateTimeFormat('es-ES', { dateStyle: 'full' }).format(new Date());
+            setupCharts();
+
+            try {
+                // Intentamos autenticar
+                await signInAnonymously(auth);
+            } catch (error) {
+                console.error("Auth Error:", error);
+                if (error.code === 'auth/configuration-not-found') {
+                    handleCloudError("Inicio de sesión anónimo deshabilitado en Firebase Console.");
+                } else {
+                    handleCloudError("Error de conexión con la base de datos.");
+                }
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    setupRealtimeData();
+                } else if (!isCloudDisabled) {
+                    // Si no hay usuario y no hemos marcado error crítico
+                    setTimeout(() => { if(!currentUser) handleCloudError("No se pudo autenticar."); }, 5000);
+                }
+            });
+        }
+
+        function handleCloudError(reason) {
+            isCloudDisabled = true;
+            document.getElementById('status-text').innerText = "Offline / Local";
+            document.getElementById('status-indicator').className = "w-1.5 h-1.5 bg-rose-500 rounded-full";
+            document.getElementById('cloud-status').className = "text-xs text-rose-500 flex items-center gap-1";
+            
+            showToast(reason, true);
+            hideLoading();
+            
+            // Cargar datos locales de respaldo si existen
+            const localData = localStorage.getItem('farithsac_backup');
+            if(localData) {
+                transactions = JSON.parse(localData);
+                updateUI();
+                renderTable();
+            }
+        }
+
+        function setupRealtimeData() {
+            const dataRef = collection(db, 'artifacts', appId, 'public', 'data', 'movimientos');
+            
+            onSnapshot(dataRef, (snapshot) => {
+                transactions = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                transactions.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                
+                // Guardar copia local por si falla el internet
+                localStorage.setItem('farithsac_backup', JSON.stringify(transactions));
+
+                updateUI();
+                renderTable();
+                hideLoading();
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                handleCloudError("Error de permisos en la base de datos.");
+            });
+        }
+
+        document.getElementById('mainForm').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+
+            const type = document.getElementById('f_type').value;
+            const amount = parseFloat(document.getElementById('f_amount').value);
+
+            const newEntry = {
+                fecha: document.getElementById('f_date').value,
+                categoria: document.getElementById('f_category').value,
+                detalles: document.getElementById('f_details').value,
+                ingreso: type === 'ingreso' ? amount : 0,
+                gasto: type === 'gasto' ? amount : 0,
+                deuda: type === 'deuda' ? amount : 0,
+                ts: Date.now()
+            };
+
+            if (currentUser && !isCloudDisabled) {
+                try {
+                    const dataRef = collection(db, 'artifacts', appId, 'public', 'data', 'movimientos');
+                    await addDoc(dataRef, newEntry);
+                    showToast("Sincronizado con la nube");
+                } catch (err) {
+                    showToast("Error al sincronizar, guardando local...", true);
+                    saveLocally(newEntry);
+                }
+            } else {
+                saveLocally(newEntry);
+                showToast("Guardado localmente (Sin Nube)");
+            }
+
+            e.target.reset();
+            submitBtn.disabled = false;
+            switchTab('dashboard');
+        };
+
+        function saveLocally(entry) {
+            entry.id = 'local_' + Date.now();
+            transactions.unshift(entry);
+            localStorage.setItem('farithsac_backup', JSON.stringify(transactions));
+            updateUI();
+            renderTable();
+        }
+
+        window.deleteItem = async (id) => {
+            if(!confirm("¿Eliminar este registro permanentemente?")) return;
+            
+            if (id.startsWith('local_')) {
+                transactions = transactions.filter(t => t.id !== id);
+                localStorage.setItem('farithsac_backup', JSON.stringify(transactions));
+                updateUI();
+                renderTable();
+                showToast("Registro local eliminado");
+                return;
+            }
+
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'movimientos', id));
+                showToast("Registro eliminado de la nube");
+            } catch (e) {
+                showToast("Error al eliminar", true);
+            }
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = transactions.map(t => `
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="p-5 font-medium text-slate-500">${t.fecha || '---'}</td>
+                    <td class="p-5"><span class="px-3 py-1 bg-slate-100 rounded-lg font-bold text-[10px]">${t.categoria}</span></td>
+                    <td class="p-5 text-slate-700 max-w-xs truncate">${t.detalles}</td>
+                    <td class="p-5 text-right font-bold text-blue-600">${t.ingreso > 0 ? '$' + t.ingreso.toLocaleString() : '-'}</td>
+                    <td class="p-5 text-right font-bold text-rose-500">${t.gasto > 0 ? '$' + t.gasto.toLocaleString() : '-'}</td>
+                    <td class="p-5 text-right font-bold text-amber-600">${t.deuda > 0 ? '$' + t.deuda.toLocaleString() : '-'}</td>
+                    <td class="p-5 text-center">
+                        <button onclick="deleteItem('${t.id}')" class="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-rose-500 transition-all">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateUI() {
+            const totals = transactions.reduce((acc, curr) => {
+                acc.ingresos += (curr.ingreso || 0);
+                acc.gastos += (curr.gasto || 0);
+                acc.deudas += (curr.deuda || 0);
+                return acc;
+            }, { ingresos: 0, gastos: 0, deudas: 0 });
+
+            document.getElementById('stat-ingresos').innerText = `$${totals.ingresos.toLocaleString()}`;
+            document.getElementById('stat-gastos').innerText = `$${totals.gastos.toLocaleString()}`;
+            document.getElementById('stat-deudas').innerText = `$${totals.deudas.toLocaleString()}`;
+            document.getElementById('stat-balance').innerText = `$${(totals.ingresos - totals.gastos).toLocaleString()}`;
+
+            updateCharts();
+        }
+
+        function setupCharts() {
+            const ctxMain = document.getElementById('chartMain').getContext('2d');
+            const ctxPie = document.getElementById('chartPie').getContext('2d');
+
+            chartMain = new Chart(ctxMain, {
+                type: 'line',
+                data: { labels: [], datasets: [
+                    { label: 'Debe', borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.4, data: [] },
+                    { label: 'Haber', borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.1)', fill: true, tension: 0.4, data: [] }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            chartPie = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%' }
+            });
+        }
+
+        function updateCharts() {
+            if(!chartMain || transactions.length === 0) return;
+            const last7 = [...transactions].reverse().slice(-7);
+            chartMain.data.labels = last7.map(t => t.fecha.substring(5));
+            chartMain.data.datasets[0].data = last7.map(t => t.ingreso);
+            chartMain.data.datasets[1].data = last7.map(t => t.gasto);
+            chartMain.update();
+
+            const cats = {};
+            transactions.filter(t => t.gasto > 0).forEach(t => { cats[t.categoria] = (cats[t.categoria] || 0) + t.gasto; });
+            chartPie.data.labels = Object.keys(cats);
+            chartPie.data.datasets[0].data = Object.values(cats);
+            chartPie.update();
+        }
+
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('nav-active');
+                b.classList.add('text-slate-400', 'hover:bg-slate-800');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById(`btn-${tabId}`).classList.add('nav-active');
+            const headers = { 'dashboard': 'Resumen General', 'forms': 'Nuevo Movimiento', 'data': 'Historial Cloud' };
+            document.getElementById('page-heading').innerText = headers[tabId];
+            lucide.createIcons();
+        };
+
+        window.exportToExcel = () => {
+            if (transactions.length === 0) {
+                showToast("No hay datos para exportar", true);
+                return;
+            }
+            const dataToExport = transactions.map(t => ({
+                FECHA: t.fecha, CATEGORIA: t.categoria, DETALLES: t.detalles,
+                DEBE: t.ingreso, HABER: t.gasto, DEUDAS: t.deuda
+            }));
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Libro1");
+            XLSX.writeFile(wb, "FarithSAC_Backup.xlsx");
+        };
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').className = isError ? 'bg-rose-500 p-1.5 rounded-full' : 'bg-emerald-500 p-1.5 rounded-full';
+            t.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 4000);
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 500);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
