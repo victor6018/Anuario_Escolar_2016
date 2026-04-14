@@ -1,1 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspoFinance - farithsac Cloud</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS para Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
 
+    <style>
+        :root { --glass-bg: rgba(255, 255, 255, 0.7); --glass-border: rgba(255, 255, 255, 0.4); }
+        .dark { --glass-bg: rgba(15, 23, 42, 0.7); --glass-border: rgba(51, 65, 85, 0.4); }
+
+        body { transition: background-color 0.3s ease; }
+        
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-active { 
+            background: linear-gradient(135deg, #f63b86 0%, #de25eb 100%); 
+            color: white !important;
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+
+        input, select, textarea {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(156, 163, 175, 0.2) !important;
+            backdrop-filter: blur(4px);
+        }
+        .dark input, .dark select, .dark textarea {
+            background: rgba(0, 0, 0, 0.2) !important;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass w-full max-w-sm p-8 rounded-[2.5rem] text-center scale-90 transition-transform duration-300 shadow-2xl border-rose-500/20">
+            <div class="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-extrabold mb-2">¿Confirmar eliminación?</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mb-8">Esta acción no se puede deshacer y el registro desaparecerá de la nube.</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-3 px-4 rounded-2xl font-bold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-all">Cancelar</button>
+                <button id="confirmDeleteBtn" class="flex-1 py-3 px-4 rounded-2xl font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/20 transition-all">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-overlay" class="fixed inset-0 z-[9999] bg-white dark:bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative">
+            <div class="w-16 h-16 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+            </div>
+        </div>
+        <p class="mt-6 font-bold tracking-tight animate-pulse text-slate-600 dark:text-slate-400">Sincronizando con farithsac Cloud...</p>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 glass border-r-0 m-4 rounded-[2rem] hidden lg:flex flex-col overflow-hidden shadow-xl">
+            <div class="p-8">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2.5 rounded-2xl shadow-lg shadow-blue-600/30">
+                        <i data-lucide="truck" class="text-white w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-black tracking-tighter">Farith<span class="text-blue-600">SAC</span></h1>
+                        <p class="text-[10px] uppercase tracking-widest font-bold opacity-50">Logística Global</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-3">
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all font-semibold nav-active" id="btn-dashboard">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i> Dashboard
+                </button>
+                <!--<button onclick="switchTab('forms')" class="nav-btn w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all font-semibold text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50" id="btn-forms">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Operaciones
+                </button>-->
+                <button onclick="switchTab('data')" class="nav-btn w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all font-semibold text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50" id="btn-data">
+                    <i data-lucide="layers" class="w-5 h-5"></i> Registro Diario
+                </button>
+            </nav>
+
+            <div class="p-6 text-center">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="w-full flex items-center justify-center gap-2 p-4 glass rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all font-bold text-sm">
+                    <i data-lucide="moon" class="w-4 h-4 dark:hidden"></i>
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    Cambiar color
+                </button>
+                <div class="mt-4 p-4 rounded-2xl bg-blue-600/5 border border-blue-600/10 text-left">
+                    <div class="flex items-center justify-between text-[10px] font-bold uppercase mb-2 opacity-60">
+                        <span>Estado Cloud</span>
+                        <div id="status-indicator" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                    </div>
+                    <p id="status-text" class="text-xs font-bold text-blue-600 dark:text-blue-400">Iniciando...</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+            
+            <!-- Mobile Bottom Nav -->
+            <nav class="lg:hidden fixed bottom-6 left-6 right-6 z-50 glass rounded-3xl p-2 flex justify-around shadow-2xl border-t-0">
+                <button onclick="switchTab('dashboard')" class="p-4 rounded-2xl text-slate-400" id="m-btn-dashboard"><i data-lucide="layout-grid"></i></button>
+                <button onclick="switchTab('forms')" class="p-4 rounded-2xl text-slate-400" id="m-btn-forms"><i data-lucide="plus-circle"></i></button>
+                <button onclick="switchTab('data')" class="p-4 rounded-2xl text-slate-400" id="m-btn-data"><i data-lucide="layers"></i></button>
+                <button onclick="document.documentElement.classList.toggle('dark')" class="p-4 rounded-2xl text-slate-400"><i data-lucide="sun"></i></button>
+            </nav>
+
+            <!-- Header -->
+            <header class="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 id="page-heading" class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">Dashboard</h2>
+                    <p id="current-date" class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1"></p>
+                </div>
+                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Exportar
+                </button>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto px-6 md:px-8 pb-32 md:pb-8 custom-scrollbar">
+                
+                <!-- DASHBOARD TAB -->
+                <section id="dashboard" class="tab-content active space-y-8">
+                    <!-- Totales Principales -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+                        <div class="glass p-6 rounded-[2rem] relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-600/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Ingresos</p>
+                            <h3 id="stat-ingresos" class="text-3xl font-black text-blue-600">S/ 0.00</h3>
+                        </div>
+                        <div class="glass p-6 rounded-[2rem] relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 w-24 h-24 bg-rose-600/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Gastos</p>
+                            <h3 id="stat-gastos" class="text-3xl font-black text-rose-500">S/ 0.00</h3>
+                        </div>
+                        <div class="glass p-6 rounded-[2rem] relative overflow-hidden group">
+                            <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-600/10 rounded-full blur-2xl group-hover:scale-150 transition-transform"></div>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Pasivos (Deuda)</p>
+                            <h3 id="stat-deudas" class="text-3xl font-black text-amber-500">S/ 0.00</h3>
+                        </div>
+                        <div class="bg-slate-900 dark:bg-white p-6 rounded-[2rem] text-white dark:text-slate-950 relative overflow-hidden group shadow-xl">
+                            <p class="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">Balance Neto</p>
+                            <h3 id="stat-balance" class="text-3xl font-black">S/ 0.00</h3>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos -->
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                        <div class="xl:col-span-2 glass p-6 md:p-8 rounded-[2.5rem] min-h-[400px]">
+                            <h4 class="font-bold flex items-center gap-2 mb-8"><i data-lucide="trending-up" class="text-blue-600"></i> Movimientos Recientes</h4>
+                            <div class="h-[300px]">
+                                <canvas id="chartMain"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass p-6 md:p-8 rounded-[2.5rem] min-h-[400px]">
+                            <h4 class="font-bold flex items-center gap-2 mb-8"><i data-lucide="pie-chart" class="text-rose-500"></i> Gastos por Categoría</h4>
+                            <div class="h-[300px]">
+                                <canvas id="chartPie"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comparativa Mensual -->
+                    <div class="glass p-6 md:p-8 rounded-[2.5rem] min-h-[400px]">
+                        <h4 class="font-bold flex items-center gap-2 mb-8"><i data-lucide="bar-chart-3" class="text-blue-500"></i> Comparativa Mensual del Año</h4>
+                        <div class="h-[350px]">
+                            <canvas id="chartBarMonths"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Filtrado Periodo Dashboard -->
+                    <div class="glass p-6 md:p-10 rounded-[3rem] shadow-xl border-blue-500/10">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                            <div>
+                                <h4 class="text-xl font-extrabold flex items-center gap-2"><i data-lucide="calendar-search" class="text-blue-600"></i> Análisis por Periodo</h4>
+                                <p class="text-sm text-slate-500">Filtra ingresos y gastos por mes y semana</p>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-3">
+                                <select id="filter_month" class="p-3 rounded-xl text-xs font-bold outline-none glass border-0 transition-all">
+                                    <option value="all">Todo el año</option>
+                                    <option value="01">Enero</option>
+                                    <option value="02">Febrero</option>
+                                    <option value="03">Marzo</option>
+                                    <option value="04">Abril</option>
+                                    <option value="05">Mayo</option>
+                                    <option value="06">Junio</option>
+                                    <option value="07">Julio</option>
+                                    <option value="08">Agosto</option>
+                                    <option value="09">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
+                                <select id="filter_week" class="p-3 rounded-xl text-xs font-bold outline-none glass border-0 transition-all">
+                                    <option value="all">Todo el mes</option>
+                                    <option value="1">Semana 1 (Día 1-7)</option>
+                                    <option value="2">Semana 2 (Día 8-14)</option>
+                                    <option value="3">Semana 3 (Día 15-21)</option>
+                                    <option value="4">Semana 4 (Día 22+)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="p-6 rounded-[2rem] bg-blue-500/5 border border-blue-500/10 text-center">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-2">Ingresos Filtro</p>
+                                <span id="filter-ingresos" class="text-2xl font-black text-blue-600">S/ 0.00</span>
+                            </div>
+                            <div class="p-6 rounded-[2rem] bg-rose-500/5 border border-rose-500/10 text-center">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-rose-500 mb-2">Gastos Filtro</p>
+                                <span id="filter-gastos" class="text-2xl font-black text-rose-500">S/ 0.00</span>
+                            </div>
+                            <div class="p-6 rounded-[2rem] bg-emerald-500/5 border border-emerald-500/10 text-center">
+                                <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-2">Balance Periodo</p>
+                                <span id="filter-balance" class="text-2xl font-black text-emerald-600">S/ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-10 rounded-[3rem]">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                            <div>
+                                <a href="FARITHSACAPP.html">
+                                    <h4 class="text-xl font-extrabold flex items-center gap-2"><i data-lucide="orbit" class="text-blue-600"></i> Todos los derechos reservados 2026</h4>
+                                </a>
+                            </div>      
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FORMS TAB -->
+                <section id="forms" class="tab-content">
+                    <div class="max-w-3xl mx-auto">
+                        <div class="glass p-8 md:p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/5 blur-3xl rounded-full"></div>
+                            
+                            <div class="relative z-10">
+                                <h3 class="text-2xl font-black mb-2">Registrar Operación</h3>
+                                <p class="text-slate-500 text-sm mb-10">Toda transacción se sincroniza automáticamente con la nube.</p>
+
+                                <form id="mainForm" class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] mb-3 opacity-50">Fecha de Operación</label>
+                                            <input type="date" id="f_date" required class="w-full p-4 rounded-2xl outline-none focus:ring-4 focus:ring-blue-600/10 transition-all font-semibold">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] mb-3 opacity-50">Categoría</label>
+                                            <select id="f_category" class="w-full p-4 rounded-2xl outline-none focus:ring-4 focus:ring-blue-600/10 transition-all font-semibold">
+                                                <option value="FLETE">FLETE</option>
+                                                <option value="COMBUSTIBLE">COMBUSTIBLE</option>
+                                                <option value="MECANICO">MECANICO</option>
+                                                <option value="REPUESTO">REPUESTO</option>
+                                                <option value="PEAJE">PEAJE</option>
+                                                <option value="CARGA">CARGA</option>
+                                                <option value="DEUDA">DEUDA</option>
+                                                <option value="OTROS">OTROS</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] mb-3 opacity-50">Tipo de Movimiento</label>
+                                            <select id="f_type" class="w-full p-4 rounded-2xl outline-none focus:ring-4 focus:ring-blue-600/10 transition-all font-semibold">
+                                                <option value="ingreso">INGRESO</option>
+                                                <option value="gasto">GASTO</option>
+                                                <option value="deuda">DEUDA</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] mb-3 opacity-50">Monto total (S/)</label>
+                                            <div class="relative">
+                                                <span class="absolute left-5 top-1/2 -translate-y-1/2 font-bold text-slate-400">S/</span>
+                                                <input type="number" id="f_amount" step="0.01" required placeholder="0.00" class="w-full p-4 pl-10 rounded-2xl outline-none focus:ring-4 focus:ring-blue-600/10 transition-all font-black text-2xl">
+                                            </div>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] mb-3 opacity-50">Descripción / Glosa</label>
+                                            <textarea id="f_details" rows="3" placeholder="Detalles del viaje, factura o reparación..." class="w-full p-5 rounded-2xl outline-none focus:ring-4 focus:ring-blue-600/10 transition-all font-medium"></textarea>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="submit-btn" class="w-full py-5 bg-blue-600 text-white rounded-[1.5rem] font-extrabold text-lg hover:bg-blue-700 transition-all transform active:scale-[0.98] shadow-xl shadow-blue-600/30 flex items-center justify-center gap-3">
+                                        <i data-lucide="save" class="w-6 h-6"></i> Guardar Operacion
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DATA TAB -->
+                <section id="data" class="tab-content">
+                    <div class="glass rounded-[2.5rem] overflow-hidden">
+                        <!-- HEADER DE TABLA CON FILTRO -->
+                        <div class="p-6 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center bg-white/5 gap-4">
+                            <div class="flex items-center gap-3">
+                                <h4 class="font-bold flex items-center gap-2 text-lg"><i data-lucide="list" class="text-blue-600"></i> Libro Diario</h4>
+                                <span class="text-[10px] font-bold px-3 py-1 bg-blue-600/10 text-blue-600 rounded-full">Sincronizado</span>
+                            </div>
+                            
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <label class="text-[10px] font-black uppercase tracking-wider text-slate-400">Ver mes:</label>
+                                <select id="table_filter_month" class="p-2.5 rounded-xl text-xs font-bold outline-none glass border-0 transition-all min-w-[140px]">
+                                    <option value="all">Todos los registros</option>
+                                    <option value="01">Enero</option>
+                                    <option value="02">Febrero</option>
+                                    <option value="03">Marzo</option>
+                                    <option value="04">Abril</option>
+                                    <option value="05">Mayo</option>
+                                    <option value="06">Junio</option>
+                                    <option value="07">Julio</option>
+                                    <option value="08">Agosto</option>
+                                    <option value="09">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50/50 dark:bg-slate-900/50">
+                                    <tr>
+                                        <th class="p-6">Fecha</th>
+                                        <th class="p-6">Categoría</th>
+                                        <th class="p-6">Descripción</th>
+                                        <th class="p-6 text-right text-blue-600">Debe</th>
+                                        <th class="p-6 text-right text-rose-600">Haber</th>
+                                        <th class="p-6 text-right text-amber-500">Pasivo</th>
+                                        <!--<th class="p-6 text-center">Acción</th>-->
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody" class="divide-y divide-slate-200/10 text-sm">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 glass px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 -translate-y-32 opacity-0 transition-all duration-500 z-[200] border-blue-600/20">
+        <div id="toast-icon" class="bg-blue-600 p-1.5 rounded-full"><i data-lucide="check" class="text-white w-4 h-4"></i></div>
+        <p id="toast-msg" class="font-bold text-sm">Completado</p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbIENNh42nNLsbolRtnl0ro0o0x_m6Dhk",
+            authDomain: "farithsac.firebaseapp.com",
+            projectId: "farithsac",
+            storageBucket: "farithsac.firebasestorage.app",
+            messagingSenderId: "319668304885",
+            appId: "1:319668304885:web:17886ec95f4ee7b69f7ebc"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'farithsac-v1';
+
+        let transactions = [];
+        let chartMain, chartPie, chartBarMonths;
+        let currentUser = null;
+        let deleteIdTarget = null;
+
+        async function init() {
+            lucide.createIcons();
+            document.getElementById('current-date').innerText = new Intl.DateTimeFormat('es-ES', { dateStyle: 'full' }).format(new Date());
+            setupCharts();
+            setupFilters();
+
+            try { await signInAnonymously(auth); } catch (e) { document.getElementById('status-text').innerText = "Error Auth"; }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    setupRealtimeData();
+                    document.getElementById('status-text').innerText = "Conectado a Cloud";
+                    document.getElementById('status-indicator').className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                    hideLoading();
+                }
+            });
+        }
+
+        function setupRealtimeData() {
+            const dataRef = collection(db, 'artifacts', appId, 'public', 'data', 'movimientos');
+            onSnapshot(dataRef, (snapshot) => {
+                transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                updateUI();
+                renderTable();
+                updateFilterResults();
+            }, (err) => showToast("Error de permisos en Firestore", true));
+        }
+
+        function setupFilters() {
+            document.getElementById('filter_month').addEventListener('change', updateFilterResults);
+            document.getElementById('filter_week').addEventListener('change', updateFilterResults);
+            document.getElementById('table_filter_month').addEventListener('change', renderTable);
+        }
+
+        function updateFilterResults() {
+            const month = document.getElementById('filter_month').value;
+            const week = document.getElementById('filter_week').value;
+            const filtered = transactions.filter(t => {
+                if (!t.fecha) return false;
+                const d = new Date(t.fecha + 'T00:00:00');
+                const tMonth = (d.getMonth() + 1).toString().padStart(2, '0');
+                const tDay = d.getDate();
+                if (month !== 'all' && tMonth !== month) return false;
+                if (week !== 'all') {
+                    if (week === '1' && tDay > 7) return false;
+                    if (week === '2' && (tDay < 8 || tDay > 14)) return false;
+                    if (week === '3' && (tDay < 15 || tDay > 21)) return false;
+                    if (week === '4' && tDay < 22) return false;
+                }
+                return true;
+            });
+            const stats = filtered.reduce((acc, curr) => {
+                acc.ing += (curr.ingreso || 0); acc.gas += (curr.gasto || 0); return acc;
+            }, { ing: 0, gas: 0 });
+            document.getElementById('filter-ingresos').innerText = `S/ ${stats.ing.toLocaleString()}`;
+            document.getElementById('filter-gastos').innerText = `S/ ${stats.gas.toLocaleString()}`;
+            document.getElementById('filter-balance').innerText = `S/ ${(stats.ing - stats.gas).toLocaleString()}`;
+        }
+
+        window.deleteItem = (id) => {
+            deleteIdTarget = id;
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-90');
+        };
+
+        window.closeConfirmModal = () => {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.add('scale-90');
+            deleteIdTarget = null;
+        };
+
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            if (!deleteIdTarget) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'movimientos', deleteIdTarget));
+                showToast("Registro eliminado");
+            } catch (e) { showToast("Error al eliminar", true); }
+            finally { closeConfirmModal(); }
+        };
+
+        document.getElementById('mainForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            const type = document.getElementById('f_type').value;
+            const amount = parseFloat(document.getElementById('f_amount').value);
+            const payload = {
+                fecha: document.getElementById('f_date').value,
+                categoria: document.getElementById('f_category').value,
+                detalles: document.getElementById('f_details').value,
+                ingreso: type === 'ingreso' ? amount : 0,
+                gasto: type === 'gasto' ? amount : 0,
+                deuda: type === 'deuda' ? amount : 0,
+                createdAt: serverTimestamp()
+            };
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'movimientos'), payload);
+                showToast("Guardado en Cloud");
+                e.target.reset();
+                setTimeout(() => switchTab('dashboard'), 500);
+            } catch (err) { showToast("Error al guardar", true); }
+            finally { btn.disabled = false; }
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const selectedMonth = document.getElementById('table_filter_month').value;
+            
+            let filteredTransactions = transactions;
+            
+            if (selectedMonth !== 'all') {
+                filteredTransactions = transactions.filter(t => {
+                    const d = new Date(t.fecha + 'T00:00:00');
+                    return (d.getMonth() + 1).toString().padStart(2, '0') === selectedMonth;
+                });
+            }
+
+            if (filteredTransactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-12 text-center text-slate-400 italic">No se encontraron registros para este periodo.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredTransactions.map(t => `
+                <tr class="hover:bg-white/5 transition-all border-b border-white/5">
+                    <td class="p-6 font-bold text-slate-500">${t.fecha}</td>
+                    <td class="p-6"><span class="px-3 py-1 bg-blue-600/10 text-blue-600 dark:text-blue-400 rounded-full font-bold text-[10px] tracking-widest">${t.categoria}</span></td>
+                    <td class="p-6 text-slate-600 dark:text-slate-400 font-medium">${t.detalles || '-'}</td>
+                    <td class="p-6 text-right font-black text-blue-600">${t.ingreso > 0 ? 'S/ ' + t.ingreso.toLocaleString() : '-'}</td>
+                    <td class="p-6 text-right font-black text-rose-500">${t.gasto > 0 ? 'S/ ' + t.gasto.toLocaleString() : '-'}</td>
+                    <td class="p-6 text-right font-black text-amber-500">${t.deuda > 0 ? 'S/ ' + t.deuda.toLocaleString() : '-'}</td>
+                    <!--
+                    <td class="p-6 text-center">
+                        <button onclick="deleteItem('${t.id}')" class="p-2 text-slate-300 hover:text-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>-->
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateUI() {
+            const totals = transactions.reduce((acc, curr) => {
+                acc.ingresos += (curr.ingreso || 0); acc.gastos += (curr.gasto || 0); acc.deudas += (curr.deuda || 0); return acc;
+            }, { ingresos: 0, gastos: 0, deudas: 0 });
+            document.getElementById('stat-ingresos').innerText = `S/ ${totals.ingresos.toLocaleString()}`;
+            document.getElementById('stat-gastos').innerText = `S/ ${totals.gastos.toLocaleString()}`;
+            document.getElementById('stat-deudas').innerText = `S/ ${totals.deudas.toLocaleString()}`;
+            document.getElementById('stat-balance').innerText = `S/ ${(totals.ingresos - totals.gastos).toLocaleString()}`;
+            updateCharts();
+        }
+
+        function setupCharts() {
+            const config = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+            chartMain = new Chart(document.getElementById('chartMain'), {
+                type: 'line',
+                data: { labels: [], datasets: [
+                    { label: 'Ingresos', borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.4, data: [] },
+                    { label: 'Gastos', borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.1)', fill: true, tension: 0.4, data: [] }
+                ]},
+                options: config
+            });
+            chartPie = new Chart(document.getElementById('chartPie'), {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'], borderWidth: 0 }] },
+                options: { ...config, cutout: '80%' }
+            });
+            chartBarMonths = new Chart(document.getElementById('chartBarMonths'), {
+                type: 'bar',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    datasets: [
+                        { label: 'Ingresos', backgroundColor: '#3b82f6', data: Array(12).fill(0), borderRadius: 8 },
+                        { label: 'Gastos', backgroundColor: '#f43f5e', data: Array(12).fill(0), borderRadius: 8 },
+                        { label: 'Deuda', backgroundColor: '#f59e0b', data: Array(12).fill(0), borderRadius: 8 }
+                    ]
+                },
+                options: { ...config, plugins: { legend: { display: true, position: 'bottom', labels: { usePointStyle: true, font: { weight: 'bold' } } } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true } } }
+            });
+        }
+
+        function updateCharts() {
+            if(!chartMain || !chartBarMonths || transactions.length === 0) return;
+            const lastData = [...transactions].reverse().slice(-10);
+            chartMain.data.labels = lastData.map(t => t.fecha.substring(5));
+            chartMain.data.datasets[0].data = lastData.map(t => t.ingreso);
+            chartMain.data.datasets[1].data = lastData.map(t => t.gasto);
+            chartMain.update();
+
+            const cats = {};
+            const monthStats = Array.from({length: 12}, () => ({ ing: 0, gas: 0, deu: 0 }));
+            
+            transactions.forEach(t => { 
+                if(t.gasto > 0) cats[t.categoria] = (cats[t.categoria] || 0) + t.gasto;
+                const m = new Date(t.fecha + 'T00:00:00').getMonth();
+                if(m >= 0 && m < 12) {
+                    monthStats[m].ing += (t.ingreso || 0);
+                    monthStats[m].gas += (t.gasto || 0);
+                    monthStats[m].deu += (t.deuda || 0);
+                }
+            });
+
+            chartPie.data.labels = Object.keys(cats);
+            chartPie.data.datasets[0].data = Object.values(cats);
+            chartPie.update();
+
+            chartBarMonths.data.datasets[0].data = monthStats.map(s => s.ing);
+            chartBarMonths.data.datasets[1].data = monthStats.map(s => s.gas);
+            chartBarMonths.data.datasets[2].data = monthStats.map(s => s.deu);
+            chartBarMonths.update();
+        }
+
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById(`btn-${tabId}`).classList.add('nav-active');
+            lucide.createIcons();
+        };
+
+        window.exportToExcel = () => {
+            const ws = XLSX.utils.json_to_sheet(transactions.map(t => ({ Fecha: t.fecha, Cat: t.categoria, Detalles: t.detalles, Debe: t.ingreso, Haber: t.gasto, Deuda: t.deuda })));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Finanzas");
+            XLSX.writeFile(wb, `FarithSAC_Reporte_${new Date().toISOString().split('T')[0]}.xlsx`);
+        };
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').className = isError ? 'bg-rose-500 p-1.5 rounded-full' : 'bg-blue-600 p-1.5 rounded-full';
+            t.classList.remove('-translate-y-32', 'opacity-0');
+            setTimeout(() => t.classList.add('-translate-y-32', 'opacity-0'), 4000);
+        }
+
+        function hideLoading() {
+            const l = document.getElementById('loading-overlay');
+            l.style.opacity = '0';
+            setTimeout(() => l.style.display = 'none', 500);
+        }
+
+        init();
+    </script>
+</body>
+</html>
