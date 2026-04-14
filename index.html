@@ -3,783 +3,517 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anuario Escolar 2026 - Promoción 2016</title>
-    
+    <title>TranspoFinance - farithsac Cloud</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS para Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
     
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    aspectRatio: {
-                        '3/4': '3 / 4',
-                        '16/9': '16 / 9',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            letter-spacing: -0.01em; 
-            overflow-x: hidden;
-            background: #f8fafc;
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
         }
-        /* Fondo Animado con Gradiente Fluido */
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(-45deg, #007bff, #ffffff, #e1eeff, #ff89c4);
-            background-size: 400% 400%;
-            animation: gradientMove 15s ease infinite;
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        .nav-active { background-color: #2563eb; color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        .dark .animated-bg {
-            background: linear-gradient(-45deg, #0d122c, #000000, #1e293b, #4c2838);
-            background-size: 400% 400%;
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 0.5s ease;
         }
-
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-
-        .bg-wrapper {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            overflow: hidden;
-            background: transparent;
-            transition: background 0.5s ease;
-        }
-
-        .blob {
-            position: absolute;
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
-            border-radius: 50%;
-            filter: blur(80px);
-            animation: move 20s infinite alternate;
-            will-change: transform;
-        }
-
-        .blob-2 {
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
-            width: 500px; height: 500px;
-            right: -100px; top: -100px;
-            animation-duration: 25s;
-            animation-delay: -5s;
-        }
-
-        @keyframes move {
-            from { transform: translate(-10%, -10%) scale(1); }
-            to { transform: translate(20%, 20%) scale(1.1); }
-        }
-        
-        @keyframes reveal {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-reveal { animation: reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        
-        .animate-reveal-delayed {
-            animation: reveal 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
-            opacity: 0;
-        }
-
-        .liquid-glass-card {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .liquid-glass-card:hover img {
-            transform: scale(1.08);
-        }
-
-
-        .dark .liquid-glass-card {
-            background: rgba(30, 41, 59, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-        }
-
-      /* Etiquetas con efecto Liquid Glass */
-        .liquid-glass-tag {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-        }
-
-        .dark .liquid-glass-tag {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-
-        .sketchfab-embed-wrapper iframe {
-            width: 100%;
-            border-radius: 1.5rem;
-            background: transparent;
-        }
-
-        /* Animación optimizada para formato panorámico 2560x1139 */
-        .group-photo-container img {
-            animation: kenburns-corners 35s ease-in-out infinite alternate;
-            transform-origin: center;
-        }
-
-        
-        @keyframes kenburns-corners {
-            0% { transform: scale(1) translate(0, 0); }
-            20% { transform: scale(2.2) translate(-25%, -4%); } /* Esquina Superior Izquierda */
-            40% { transform: scale(2.2) translate(25%, -12%); }  /* Esquina Superior Derecha */
-            60% { transform: scale(1.8) translate(0, 0); }       /* Zoom profundo al Centro */
-            80% { transform: scale(2.2) translate(-25%, 25%); }  /* Esquina Inferior Izquierda */
-            100% { transform: scale(2.2) translate(25%, 25%); }  /* Esquina Inferior Derecha */
-        }
-
-        
-        /* Estilos para el Chat de IA */
-        #ai-chat-window {
-            display: none;
-            flex-direction: column;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #ai-chat-window.open { display: flex; animation: reveal 0.3s forwards; }
-
-        .message-bubble {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 18px;
-            margin-bottom: 8px;
-            font-size: 13px;
-            line-height: 1.4;
-        }
-        .message-user {
-            background: #3b82f6;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        .message-ai {
-            background: #f1f5f9;
-            color: #1e293b;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-        .dark .message-ai {
-            background: #334155;
-            color: #f1f5f9;
-        }
-
-        .typing-dots span {
-            width: 4px; height: 4px;
-            background: currentColor;
-            border-radius: 50%;
-            display: inline-block;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-        
-        #ai-chat-window { display: none; }
-        #ai-chat-window.open { display: flex; animation: slideUp 0.3s ease-out forwards; }
-        
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        .message-bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 13px; margin-bottom: 8px; position: relative; }
-        .message-user { background: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .message-ai { background: #f1f5f9; color: #1e293b; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
-        .dark .message-ai { background: #1e293b; color: #f1f5f9; border-color: #334155; }
-
-        .typing-dots span { width: 4px; height: 4px; background: currentColor; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
-<body class="text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-500">
-    
+<body class="text-slate-800">
 
-    <!-- Ventana de Chat Flotante -->
-    <div class="fixed bottom-6 right-6 z-[100] flex flex-col items-end">
-        <div id="ai-chat-window" class="liquid-glass-card mb-4 w-[350px] sm:w-[400px] h-[500px] rounded-[1.5rem] overflow-hidden flex-col shadow-2xl border-indigo-500/30">
-            <!--<div class="p-5 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white flex items-center justify-between">-->
-            <div class="p-5 liquid-glass-card dark:text-white flex items-center justify-between">
+    <!-- Loading State -->
+    <div id="loading-overlay">
+        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="font-bold text-slate-600 italic">Estableciendo conexión con farithsac Cloud...</p>
+        <p id="loading-subtext" class="text-xs text-slate-400 mt-2">Sincronizando base de datos central</p>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-slate-900 text-white hidden lg:flex flex-col">
+            <div class="p-8">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                    <div class="bg-blue-500 p-2 rounded-lg">
+                        <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
                     </div>
-                    <div>
-                        <p class="text-xs font-bold leading-none uppercase tracking-widest">IA De la Promo</p>
-                        <p class="text-[10px] opacity-80 italic">"Conectada al 2016"</p>
-                    </div>
+                    <h1 class="text-xl font-bold tracking-tight">Farith<span class="text-blue-400">SAC</span></h1>
                 </div>
-                <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-full transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-2">
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all nav-active" id="btn-dashboard">
+                    <i data-lucide="layout-grid"></i> Dashboard
                 </button>
-            </div>
+                <button onclick="switchTab('forms')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800" id="btn-forms">
+                    <i data-lucide="plus-circle"></i> Nueva Operación
+                </button>
+                <button onclick="switchTab('data')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800" id="btn-data">
+                    <i data-lucide="table-properties"></i> Registro Diario
+                </button>
+            </nav>
 
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col bg-slate-50/50 dark:bg-slate-900/80">
-                <div class="message-bubble message-ai">
-                    ¡Qué onda! Soy la memoria de la Prom 2016. 😏 Pregúntame cualquier cosa sobre los integrantes.
+            <div class="p-6 mt-auto">
+                <div class="bg-slate-800/50 rounded-2xl p-4 border border-slate-700">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Estado de Red</p>
+                    <div class="flex items-center justify-between">
+                        <span id="cloud-status" class="text-xs text-amber-400 flex items-center gap-1">
+                            <span id="status-indicator" class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span> 
+                            <span id="status-text">Conectando...</span>
+                        </span>
+                    </div>
                 </div>
             </div>
+        </aside>
 
-            <div class="p-4 liquid-glass-card ">
-                <div class="flex gap-2">
-                    <input type="text" id="chat-input" placeholder="Pregunta sobre alguien..." class="flex-1 liquid-glass-card text-sm rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500">
-                    <button id="send-btn" class="bg-indigo-600 text-white p-3 rounded-2xl hover:bg-indigo-700 shadow-lg active:scale-95 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-slate-50 custom-scrollbar">
+            <!-- Header -->
+            <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex justify-between items-center">
+                <div>
+                    <h2 id="page-heading" class="text-xl font-bold text-slate-900">Resumen General</h2>
+                    <p class="text-xs text-slate-500" id="current-date"></p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportToExcel()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg">
+                        <i data-lucide="file-down" class="w-4 h-4"></i> Exportar Excel
                     </button>
                 </div>
-            </div>
-        </div>
+            </header>
 
-        <button onclick="toggleChat()" class="liquid-glass-card p-5 rounded-3xl shadow-2xl hover:scale-110 active:scale-95 transition-all">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-        </button>
-    </div>
-
-     <!-- Capa de Fondo Animado -->
-    <div class="animated-bg"></div>
-
-    <!-- Contenedor de Manchas/Blobs Animados -->
-    <div class="bg-wrapper">
-        <div class="blob"></div>
-        <div class="blob blob-2"></div>
-    </div>
-
-    <nav class="fixed top-6 right-6 z-50 flex gap-3">
-        <button id="themeToggle" class="p-3 bg-white/50 dark:bg-slate-900/50 backdrop-blur-2xl rounded-2xl shadow-xl hover:scale-110 active:scale-95 transition-all border border-white/50 dark:border-slate-700/50">
-            <svg id="sunIcon" class="w-5 h-5 hidden text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h1M4 12H3m15.364-6.364l.707-.707M6.343 17.657l-.707-.707m12.728 0l-.707.707M6.343 6.343l-.707.707m12.728 12.728L5.636 5.636M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
-            <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
-        </button>
-    </nav>
-
-    <!-- Header -->
-    <header class="pt-32 pb-16 px-6 text-center">
-        <div class="max-w-5xl mx-auto">
-            <div class="inline-block px-3 py-1 bg-blue-600/10 dark:bg-blue-400/10 rounded-full text-[10px] font-bold tracking-[0.2em] text-blue-600 dark:text-blue-400 uppercase mb-6 animate-reveal">
-                "Sueños Anhelados y Rumbos Infinitos"
-            </div>
-            <h1 class="text-5xl md:text-8xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-6 animate-reveal">
-                Promocion <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-emerald-400">2016</span>
-            </h1>
-            <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 font-medium tracking-tight animate-reveal-delayed max-w-2xl mx-auto">
-                ¡Cuánto tiempo sin vernos! Ya pasaron <br class="md:hidden">
-                <span id="timeCounter" class="text-slate-900 dark:text-slate-200 font-bold underline decoration-blue-500/30">Calculando tiempo...</span>
-            </p>
-        </div>
-    </header>
-
-    <!-- Barra de Filtros -->
-    <section class="sticky top-6 z-40 px-4 mb-12">
-        <div class="max-w-4xl mx-auto">
-            <div class="liquid-glass-card rounded-[2rem] p-2 flex flex-col md:flex-row gap-2 items-center">
-                <div class="flex flex-1 gap-1 w-full overflow-x-auto no-scrollbar p-1">
-                    <button data-filter="Todos" class="filter-btn flex-1 px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all bg-white dark:bg-slate-800 text-slate-950 dark:text-white shadow-md">TODOS</button>
-                    <button data-filter="Estud." class="filter-btn flex-1 px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50">ESTUDIANTES</button>
-                    <button data-filter="Profe." class="filter-btn flex-1 px-5 py-2.5 rounded-xl text-[11px] font-bold tracking-wider transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50">DOCENTES</button>
-                </div>
-                <div class="relative w-full md:w-64 p-1">
-                    <input type="text" id="searchInput" placeholder="Buscar nombre..." class="w-full bg-white/60 dark:bg-slate-950/40 border border-white/40 dark:border-white/5 rounded-xl py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500/30 text-slate-950 dark:text-white transition-all outline-none">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sección de Perfiles -->
-    <main class="max-w-7xl mx-auto px-6 pb-24">
-        <div id="yearbookGrid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            <!-- Render dinámico -->
-        </div>
-    </main>
-
-        <!-- Nueva Sección: Foto Grupal -->
-        <section>
-        <!-- Sección: Foto Grupal Panorámica -->
-        <div class="max-w-6xl mx-auto animate-reveal" style="animation-delay: 400ms;">
-            <div class="text-center mb-8">
-                <h2 class="text-2xl md:text-4xl font-black tracking-tight mb-2 uppercase">Recuerdo Grupal</h2>
-                <div class="h-1 w-20 bg-blue-600 mx-auto rounded-full"></div>
-            </div>
-            
-            <div class="liquid-glass-card rounded-[2rem] md:rounded-[3rem] p-3 md:p-6 overflow-hidden">
-                <!-- Cambiado de aspect-video (16:9) a aspect-pano (proporción real) -->
-                <div class="group-photo-container relative aspect-pano rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-slate-200 dark:bg-slate-800 shadow-inner">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_2.jpg" 
-                         alt="Foto de Promoción 2016"
-                         class="w-full h-full object-cover"
-                         onerror="this.src='https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1470&auto=format&fit=crop'">
-                    
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-6 md:p-10 pointer-events-none">
-                        <div>
-                            <p class="text-white/70 text-[10px] md:text-sm font-bold uppercase tracking-[0.2em] mb-1">Diciembre 2016</p>
-                            <!--<h3 class="text-white text-xl md:text-4xl font-black italic">"Diciembre 2016"</h3>-->
+            <div class="p-8 space-y-8 max-w-[1400px] mx-auto">
+                
+                <!-- DASHBOARD TAB -->
+                <section id="dashboard" class="tab-content active space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="glass-card p-6 rounded-3xl border-l-4 border-blue-500">
+                            <p class="text-slate-500 text-sm font-medium">Total DEBE (Ingresos)</p>
+                            <h3 id="stat-ingresos" class="text-3xl font-black mt-2 text-blue-600">$0.00</h3>
+                        </div>
+                        <div class="glass-card p-6 rounded-3xl border-l-4 border-rose-500">
+                            <p class="text-slate-500 text-sm font-medium">Total HABER (Gastos)</p>
+                            <h3 id="stat-gastos" class="text-3xl font-black mt-2 text-rose-600">$0.00</h3>
+                        </div>
+                        <div class="glass-card p-6 rounded-3xl border-l-4 border-amber-500">
+                            <p class="text-slate-500 text-sm font-medium">Deuda Total</p>
+                            <h3 id="stat-deudas" class="text-3xl font-black mt-2 text-amber-600">$0.00</h3>
+                        </div>
+                        <div class="glass-card p-6 rounded-3xl bg-slate-900 text-white">
+                            <p class="text-slate-400 text-sm font-medium">Saldo Neto</p>
+                            <h3 id="stat-balance" class="text-3xl font-black mt-2">$0.00</h3>
                         </div>
                     </div>
-                </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 glass-card p-8 rounded-3xl h-[450px]">
+                            <h4 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="bar-chart-3" class="text-blue-500"></i> Histórico Debe vs Haber</h4>
+                            <div class="h-full pb-10">
+                                <canvas id="chartMain"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card p-8 rounded-3xl h-[450px]">
+                            <h4 class="font-bold text-slate-800 mb-6 flex items-center gap-2"><i data-lucide="pie-chart" class="text-rose-500"></i> Distribución de Haber</h4>
+                            <div class="h-full pb-10">
+                                <canvas id="chartPie"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FORMS TAB -->
+                <section id="forms" class="tab-content">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="glass-card p-10 rounded-[2.5rem] border-2 border-white shadow-2xl">
+                            <div class="mb-8 text-center">
+                                <h3 class="text-2xl font-black text-slate-900">Registrar Movimiento</h3>
+                                <p class="text-slate-500 italic text-sm">Transacción sincronizada con farithsac Cloud</p>
+                            </div>
+
+                            <form id="mainForm" class="space-y-6">
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest text-center">Fecha</label>
+                                        <input type="date" id="f_date" required class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all text-center">
+                                    </div>
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Categoría</label>
+                                        <select id="f_category" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all">
+                                            <option value="FLETE">FLETE</option>
+                                            <option value="COMBUSTIBLE">COMBUSTIBLE</option>
+                                            <option value="MECANICO">MECANICO</option>
+                                            <option value="REPUESTO">REPUESTO</option>
+                                            <option value="PEAJE">PEAJE</option>
+                                            <option value="CARGA">CARGA</option>
+                                            <option value="DEUDA">DEUDA</option>
+                                            <option value="OTROS">OTROS</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Tipo de Cuenta</label>
+                                        <select id="f_type" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all">
+                                            <option value="ingreso">DEBE (Ingreso)</option>
+                                            <option value="gasto">HABER (Gasto)</option>
+                                            <option value="deuda">DEUDA (Pasivo)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest text-center">Monto Principal ($)</label>
+                                        <input type="number" id="f_amount" step="0.01" required placeholder="0.00" class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 font-bold text-2xl text-center">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2 tracking-widest">Detalles / Descripción</label>
+                                        <textarea id="f_details" rows="3" placeholder="Descripción de la operación..." class="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100 transition-all"></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" id="submit-btn" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-black transition-all transform active:scale-[0.98] shadow-xl flex items-center justify-center gap-3">
+                                    <i data-lucide="save" class="w-5 h-5"></i> Confirmar Registro
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- DATA TAB -->
+                <section id="data" class="tab-content">
+                    <div class="glass-card rounded-[2rem] overflow-hidden border border-slate-200">
+                        <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center">
+                            <h4 class="font-bold text-slate-800">Libro Contable Diario</h4>
+                            <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest">Sincronización en tiempo real</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                                    <tr>
+                                        <th class="p-5">Fecha</th>
+                                        <th class="p-5">Categoría</th>
+                                        <th class="p-5">Detalles</th>
+                                        <th class="p-5 text-right text-blue-600">DEBE</th>
+                                        <th class="p-5 text-right text-rose-600">HABER</th>
+                                        <th class="p-5 text-right text-amber-600">DEUDA</th>
+                                        <th class="p-5 text-center">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Datos dinámicos de Firebase -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
             </div>
-        </div>
-    </section>
-
-    <!-- SECCIÓN: Galería de Recuerdos -->
-    <section class="bg-slate-50/50 dark:bg-slate-900/20 transition-colors py-10 px-6">
-        <div class="max-w-6xl mx-auto">
-            <div class="mb-16 text-center md:text-left">
-                <h2 class="text-3xl font-bold tracking-tight mb-2 dark:text-white">Momentos Inolvidables</h2>
-                <p class="text-slate-500 dark:text-slate-400 font-medium">Fotos de grupo y actividades especiales.</p>
-            </div>
-
-            <div class="grid grid-cols-4 md:grid-cols-4 gap-4 ">
-                <div class="col-span-4 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_1.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Día del Deporte</p>
-                    </div>
-                </div>
-
-                <!--
-                <div class="col-span-2 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_4.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Salón Completo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Fotos - 2016</p>
-                    </div>
-                </div>
-                -->
-                
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_4.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_6.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Graduación">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-                
-                <!--
-                <div class="col-span-2 liquid-glass-card group overflow-hidden rounded-[2.5rem] shadow-xl cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/9240fe6cabf54824b8f42f5a586f2ff7b87975dc/images/Image_5.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Día del Deporte</p>
-                    </div>
-                </div>
-              
-
-                <div class="col-span-2 liquid-glass-card group overflow-hidden rounded-[2.5rem] shadow-xl cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_1.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Día del Deporte</p>
-                    </div>
-                </div>
-            -->
-
-
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_7.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_8.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-
-
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_15.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Salón Completo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Deportes</p>
-                    </div>
-                </div>
-
-                <!--
-                <div class="col-span-2 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_14.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Paseo de Verano</p>
-                    </div>
-                </div>
-                -->
-                <div class="col-span-2 liquid-glass-card group row-span-2 relative overflow-hidden rounded-3xl shadow-xl aspect-video md:aspect-auto cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_9.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Graduación">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-
-                <!--
-                <div class="col-span-2 liquid-glass-card group overflow-hidden rounded-[2.5rem] shadow-xl cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/9240fe6cabf54824b8f42f5a586f2ff7b87975dc/images/Image_5.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Actividades">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                        <p class="text-white font-bold">Día del Deporte</p>
-                    </div>
-                </div>
-                -->
-
-
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_12.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-                <div class="group relative overflow-hidden rounded-3xl bg-slate-200 dark:bg-slate-800 aspect-square cursor-pointer">
-                    <img src="https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/image_13.jpg" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" alt="Paseo">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                        <p class="text-white text-xs font-bold">Deportes</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <section class="px-6 bg-slate-50/50 dark:bg-slate-900/20 transition-colors">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl font-bold tracking-tight mb-8 dark:text-white">Nuestro Uniforme</h2>
-            <div class="sketchfab-embed-wrapper shadow-2xl shadow-blue-500/10 rounded-[2rem] overflow-hidden border border-slate-100 dark:border-slate-800 mt-12">
-                <iframe 
-                    title="BELEN DE OSMA Y PARDO" 
-                    frameborder="0" 
-                    allowfullscreen 
-                    mozallowfullscreen="true" 
-                    webkitallowfullscreen="true" 
-                    allow="autoplay; fullscreen; xr-spatial-tracking" 
-                    xr-spatial-tracking 
-                    height="640" 
-                    src="https://sketchfab.com/models/7970dc83d8ab488cbacfdb369ca9f472/embed?camera=0&transparent=1&ui_hint=2">
-                </iframe>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modal de Zoom -->
-    <div id="zoomModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
-        <div class="absolute inset-0  backdrop-blur-xl"></div>
-        <button id="closeModal" class="absolute top-8 right-8 text-slate-900 dark:text-white hover:rotate-90 transition-transform duration-300 z-10">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <img id="modalImg" src="" class="relative z-0 max-w-3xl w-full bg-slate-50 dark:bg-slate-900 rounded-3xl shadow-2xl scale-95 transition-transform duration-500 object-contain" alt="Zoom">
+        </main>
     </div>
 
-    <footer class="bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-slate-900 py-16 px-6 text-center md:text-left">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-            <div>
-                <h3 class="text-lg font-bold tracking-tight dark:text-white">Recordatorio Escolar Digital</h3>
-                <p class="text-slate-400 dark:text-slate-500 text-sm">Diseñado para la eternidad. Todos los derechos reservados 2019.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Notificación Flotante -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 translate-y-32 opacity-0 transition-all duration-500 z-50">
+        <div id="toast-icon" class="bg-emerald-500 p-1.5 rounded-full"><i data-lucide="check" class="w-4 h-4"></i></div>
+        <p id="toast-msg" class="font-bold text-sm">Acción completada</p>
+    </div>
 
-    <script>
-        const apiKey = "AIzaSyD4ab3Rzy9Yn45JWXZxCSn9BgMH6Gt1MPM";
-        const GITHUB_BASE_URL = "https://raw.githubusercontent.com/victor6018/Anuario_Escolar_2016/main/images/";
-        
-        const integrantes = [
-             { id: 1, nombre: "Prof. Amstron Juan de D.", nacimiento: "1975-06-15", rol: "Profe.", cita: "Trabaja no para un aplauso, si no para una causa, vive la vida para expresae, no para impresionar.", hobby: "Lectura", foto: "amstron.jpg", seed: "3" },
-            { id: 2, nombre: "Allcca H, Elvis", nacimiento: "2000-08-02", rol: "Estud.", cita: "El futuro pertenece a quienes creen en la belleza de sus sueños.", hobby: "Ver Television", foto: "elvis.jpg", seed: "Sofia" },
-            { id: 3, nombre: "Amable Q, Luis F.", nacimiento: "2000-03-01", rol: "Estud.", cita: "No es un adiós, es un hasta luego. ¡Nos vemos en la cima!", hobby: "Leer y estudiar", foto: "luis.jpg", seed: "Carlos" },
-            { id: 4, nombre: "Carbajal F, Juan C.", nacimiento: "1999-09-23", rol: "Estud.", cita: "Sin miedo al éxito.", hobby: "Jugar Dota", foto: "juan.jpg", seed: "4" },
-            { id: 5, nombre: "Ccasa C, Yessenia M.", nacimiento: "2000-07-11", rol: "Estud.", cita: "Pinceladas de vida.", hobby: "Escuchar musica", foto: "yessenia.jpg", seed: "5" },
-            { id: 6, nombre: "Ccorimanya P, Rusbel C.", nacimiento: "1999-07-19", rol: "Estud.", cita: "Programando sueños.", hobby: "Jugar Futbol", foto: "rusbel.jpg", seed: "6" },
-            { id: 7, nombre: "Ccorimanya P, Roger M.", nacimiento: "1997-09-12", rol: "Estud.", cita: "Viviendo al máximo.", hobby: "Jugar Futbol", foto: "roger.jpg", seed: "7" },
-            { id: 8, nombre: "Diaz A, Franklin Y.", nacimiento: "1999-10-28", rol: "Estud.", cita: "Persistencia siempre.", hobby: "Ver Television", foto: "franklin.jpg", seed: "8" },
-            { id: 9, nombre: "Flores V, Kely M.", nacimiento: "1999-09-04", rol: "Estud.", cita: "Sonríe siempre.", hobby: "Musica y leer", foto: "monica.jpg", seed: "9" },
-            { id: 10, nombre: "Gonzales V, Cesar", nacimiento: "1997-08-04", rol: "Estud.", cita: "Meta tras meta.", hobby: "Jugar Futbol", foto: "cesar.jpg", seed: "10" },
-            { id: 11, nombre: "Huaman C, Celestina", nacimiento: "1997-09-07", rol: "Estud.", cita: "Creer es crear.", hobby: "jugar Futbol", foto: "celestina.jpg", seed: "11" },
-            { id: 12, nombre: "Human M, Mari L.", nacimiento: "1999-06-08", rol: "Estud.", cita: "Nuevos horizontes.", hobby: "Escuchar muica", foto: "mary.jpg", seed: "12" },
-            { id: 13, nombre: "Human Q, Max A.", nacimiento: "1999-07-14", rol: "Estud.", cita: "Amo aprender.", hobby: "Jugar Futbol", foto: "max.jpg", seed: "13" },
-            { id: 14, nombre: "Huaman R, Richard", nacimiento: "1999-08-03", rol: "Estud.", cita: "Pasión por todo.", hobby: "Salir con amigos", foto: "richard.jpg", seed: "14" },
-            { id: 15, nombre: "Huarcaya O, Ronaldo", nacimiento: "1999-09-17", rol: "Estud.", cita: "Luz propia.", hobby: "Jugar Futbol", foto: "ronaldo.jpg", seed: "15" },
-            { id: 16, nombre: "Huaylla Q, Williams M.", nacimiento: "1999-07-29", rol: "Estud.", cita: "Aventurero.", hobby: "Jugar futbol", foto: "williams.jpg", seed: "16" },
-            { id: 17, nombre: "Laura O, Naira", nacimiento: "1998-08-07", rol: "Estud.", cita: "Fuerza y fe.", hobby: "Cantar y Bailar", foto: "naira.jpg", seed: "17" },
-            { id: 18, nombre: "Maycalla Q, Liz", nacimiento: "1999-01-24", rol: "Estud.", cita: "Todo fluye.", hobby: "Jugar Futbol", foto: "liz.jpg", seed: "18" },
-            { id: 19, nombre: "Orosco M, Yasmin S.", nacimiento: "1999-09-13", rol: "Estud.", cita: "Pura vida.", hobby: "Cantar y Musica", foto: "yasmin.jpg", seed: "19" },
-            { id: 20, nombre: "Oscco Mallma, Victor Raul", nacimiento: "1999-07-18", rol: "Estud.", cita: "Asi es la vida mijo.", hobby: "Dibujar y leer", foto: "victor.jpg", seed: "20" },
-            { id: 21, nombre: "Oscco Q, Emerson", nacimiento: "1999-03-28", rol: "Estud.", cita: "Energía positiva.", hobby: "Jugar Futbol", foto: "emerson.jpg", seed: "21" },
-            { id: 22, nombre: "Oscco R, Rosalinda", nacimiento: "1999-07-04", rol: "Estud.", cita: "Justicia y honor.", hobby: "jugar Futbol", foto: "rosa.jpg", seed: "22" },
-            { id: 23, nombre: "Padilla Ll,Denis", nacimiento: "1999-01-05", rol: "Estud.", cita: "Brilla fuerte.", hobby: "Jugar Futbol", foto: "denis.jpg", seed: "23" },
-            { id: 24, nombre: "Peceros C, Thomas S.", nacimiento: "2000-08-05", rol: "Estud.", cita: "Imparable.", hobby: "Jugar Dota", foto: "thomas.jpg", seed: "24" },
-            { id: 25, nombre: "Quispe G, Janeth", nacimiento: "1999-09-15", rol: "Estud.", cita: "Libre.", hobby: "Ver Facebook", foto: "janeth.jpg", seed: "25" },
-            { id: 26, nombre: "Rivas P, Jhon G", nacimiento: "2001-07-29", rol: "Profe.", cita: "Inicios.", hobby: "Caminar", foto: null, seed: "26" },
-            { id: 27, nombre: "Saca P, Clinton G.", nacimiento: "2000-08-12", rol: "Estud.", cita: "Nunca dejen de dudar.", hobby: "Jugar Futbol", foto: "clinton.jpg", seed: "27" },
-            { id: 28, nombre: "Sanchez R, Matilde W.", nacimiento: "1998-08-18", rol: "Estud.", cita: "La gramática es vida.", hobby: "Musica y salir", foto: "wayta.jpg", seed: "28" },
-            { id: 29, nombre: "Tito C, luz M.", nacimiento: "1998-04-24", rol: "Estud.", cita: "La gramática es vida.", hobby: "Escuchar musica", foto: "luz.jpg", seed: "29" },
-            { id: 30, nombre: "Vasquez M, Yuber I.", nacimiento: "1999-04-25", rol: "Estud.", cita: "La gramática es vida.", hobby: "Jugar Futbol", foto: "yuber.jpg", seed: "30" }
-        ];
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        let chatHistory = [];
-        let currentFilter = 'Todos';
-        let currentSearch = '';
+        // Configuración de tu proyecto farithsac
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbIENNh42nNLsbolRtnl0ro0o0x_m6Dhk",
+            authDomain: "farithsac.firebaseapp.com",
+            projectId: "farithsac",
+            storageBucket: "farithsac.firebasestorage.app",
+            messagingSenderId: "319668304885",
+            appId: "1:319668304885:web:17886ec95f4ee7b69f7ebc",
+            measurementId: "G-KKNJPDLB3P"
+        };
 
-        //Inicio de la IA
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'farithsac-v1';
 
-        function toggleChat() { document.getElementById('ai-chat-window').classList.toggle('open'); }
+        let transactions = [];
+        let chartMain, chartPie;
+        let currentUser = null;
+        let isCloudDisabled = false;
 
-        async function askAI(query) {
-            const messagesDiv = document.getElementById('chat-messages');
-            
-            // Render user message
-            const userMsg = document.createElement('div');
-            userMsg.className = "message-bubble message-user";
-            userMsg.innerText = query;
-            messagesDiv.appendChild(userMsg);
+        async function init() {
+            lucide.createIcons();
+            document.getElementById('current-date').innerText = new Intl.DateTimeFormat('es-ES', { dateStyle: 'full' }).format(new Date());
+            setupCharts();
 
-            // Typing indicator
-            const typingMsg = document.createElement('div');
-            typingMsg.className = "message-bubble message-ai typing-dots";
-            typingMsg.innerHTML = "<span></span><span></span><span></span>";
-            messagesDiv.appendChild(typingMsg);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            // Cargar backup local primero para velocidad
+            const localData = localStorage.getItem('farithsac_backup');
+            if(localData) {
+                transactions = JSON.parse(localData);
+                updateUI();
+                renderTable();
+            }
 
-            // Prompt de contexto (usando el formato que funcionó en tu curl)
-            const contextPrompt = `Eres la IA Chismosa de la Promoción 2016. Datos: ${JSON.stringify(integrantes)}. Responde como si fueras un compañero de clase, usa jerga juvenil, sé gracioso y nostálgico. Si preguntan por alguien de la lista, cuenta su chisme.`;
+            // Timeout de conexión 5 seg
+            const cloudTimeout = setTimeout(() => {
+                if (!currentUser) handleCloudError("Modo Local: Configure reglas en Firebase");
+            }, 5000); 
 
             try {
-                // Endpoint usando el modelo 'gemini-flash-latest' como en tu curl
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
-                
-                const body = {
-                    contents: [
-                        { role: "user", parts: [{ text: contextPrompt }] },
-                        ...chatHistory,
-                        { role: "user", parts: [{ text: query }] }
-                    ]
-                };
-
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-
-                const data = await response.json();
-                
-                if (data.error) throw new Error(data.error.message);
-
-                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "¡Uy! Se me olvidó el chisme. Pregunta de nuevo.";
-
-                // Guardar en historial
-                chatHistory.push({ role: "user", parts: [{ text: query }] });
-                chatHistory.push({ role: "model", parts: [{ text: aiText }] });
-                if(chatHistory.length > 6) chatHistory.splice(0, 2);
-
-                typingMsg.remove();
-                const aiMsg = document.createElement('div');
-                aiMsg.className = "message-bubble message-ai";
-                aiMsg.innerText = aiText;
-                messagesDiv.appendChild(aiMsg);
-            } catch (e) {
-                typingMsg.remove();
-                const errDiv = document.createElement('div');
-                errDiv.className = "message-bubble message-ai text-red-500 text-[10px]";
-                errDiv.innerText = "Error: " + e.message;
-                messagesDiv.appendChild(errDiv);
+                // Intentar login anónimo
+                await signInAnonymously(auth);
+            } catch (error) {
+                clearTimeout(cloudTimeout);
+                handleCloudError("Error Auth: Habilite Anónimo en consola.");
             }
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    clearTimeout(cloudTimeout);
+                    currentUser = user;
+                    setupRealtimeData();
+                    document.getElementById('status-text').innerText = "Online";
+                    document.getElementById('status-indicator').className = "w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse";
+                    document.getElementById('cloud-status').className = "text-xs text-emerald-400 flex items-center gap-1";
+                }
+            });
         }
 
-        document.getElementById('send-btn').onclick = () => {
-            const input = document.getElementById('chat-input');
-            if(input.value.trim()) {
-                askAI(input.value);
-                input.value = '';
-            }
-        };
+        function handleCloudError(reason) {
+            isCloudDisabled = true;
+            document.getElementById('status-text').innerText = "Offline / Local";
+            document.getElementById('status-indicator').className = "w-1.5 h-1.5 bg-rose-500 rounded-full";
+            document.getElementById('cloud-status').className = "text-xs text-rose-500 flex items-center gap-1";
+            hideLoading();
+            showToast(reason, true);
+        }
 
-        document.getElementById('chat-input').onkeypress = (e) => { if(e.key === 'Enter') document.getElementById('send-btn').click(); };
-        // Fin de la logica de la IA
-
-        function actualizarContador() {
-            const fechaInicio = new Date(2016, 11, 23); 
-            const fechaActual = new Date();
+        function setupRealtimeData() {
+            // Path obligatorio: /artifacts/{appId}/public/data/movimientos
+            const dataRef = collection(db, 'artifacts', appId, 'public', 'data', 'movimientos');
             
-            let years = fechaActual.getFullYear() - fechaInicio.getFullYear();
-            let months = fechaActual.getMonth() - fechaInicio.getMonth();
-            let days = fechaActual.getDate() - fechaInicio.getDate();
-
-            if (days < 0) {
-                months--;
-                const ultimoMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 0);
-                days += ultimoMes.getDate();
-            }
-            if (months < 0) {
-                years--;
-                months += 12;
-            }
-
-            document.getElementById('timeCounter').innerText = `${years} años, ${months} meses y ${days} días`;
-        }
-
-
-        function formatearCumple(fechaStr) {
-            const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-            const fecha = new Date(fechaStr + "T00:00:00");
-            return `${fecha.getDate()} de ${meses[fecha.getMonth()]}`;
-        }
-
-        const themeToggle = document.getElementById('themeToggle');
-        const sunIcon = document.getElementById('sunIcon');
-        const moonIcon = document.getElementById('moonIcon');
-
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            sunIcon.classList.toggle('hidden', !isDark);
-            moonIcon.classList.toggle('hidden', isDark);
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
-
-        themeToggle.addEventListener('click', toggleDarkMode);
-
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            sunIcon.classList.remove('hidden');
-            moonIcon.classList.add('hidden');
-        }
-
-        function calcularEdad(fechaNacimiento) {
-            const hoy = new Date();
-            const cumple = new Date(fechaNacimiento);
-            let edad = hoy.getFullYear() - cumple.getFullYear();
-            const mes = hoy.getMonth() - cumple.getMonth();
-            if (mes < 0 || (mes === 0 && hoy.getDate() < cumple.getDate())) edad--;
-            return edad;
-        }
-
-        function render() {
-            const grid = document.getElementById('yearbookGrid');
-            grid.innerHTML = '';
-
-            const filtrados = integrantes.filter(p => {
-                const cumpleFiltro = currentFilter === 'Todos' || p.rol === currentFilter;
-                const cumpleBusqueda = p.nombre.toLowerCase().includes(currentSearch.toLowerCase());
-                return cumpleFiltro && cumpleBusqueda;
-            });
-
-            filtrados.forEach((p, index) => {
-                const avatar = p.rol === 'Profe.' ? 'bottts' : 'avataaars';
-                const fallback = `https://api.dicebear.com/7.x/${avatar}/svg?seed=${p.seed}`;
-                const imageUrl = p.foto ? GITHUB_BASE_URL + p.foto : fallback;
+            onSnapshot(dataRef, (snapshot) => {
+                const cloudTransactions = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
                 
-                grid.innerHTML += `
-                     <article class="liquid-glass-card rounded-[1.2rem] md:rounded-[2.5rem] p-3 md:p-5 animate-reveal" style="animation-delay: ${index * 50}ms">
-                        <div class="relative overflow-hidden rounded-[0.8rem] md:rounded-[1.8rem] aspect-3/4 mb-3 md:mb-5 bg-slate-100 dark:bg-slate-800">
-                            <img src="${imageUrl}" onerror="this.src='${fallback}'" 
-                                 class="w-full h-full object-cover cursor-zoom-in transition-transform duration-500 hover:scale-110" 
-                                 onclick="openZoom('${imageUrl}')">
-                            <div class="liquid-glass-tag absolute top-3 right-3 px-3 py-1 rounded-[9px] text-[9px] font-black uppercase tracking-widest text-slate-800 dark:text-slate-100">
-                                ${p.rol}
-                            </div>
-                        </div>
-                        
-                        <div class="px-2 flex-grow">
-                            <!--<h3 class="font-bold text-xl text-slate-900 dark:text-white tracking-tight mb-1 truncate">${p.nombre}</h3>
-                            AJUSTE: Nombres sin truncar y con tamaño adaptativo -->
-
-                            <h3 class="font-bold text-[13px] md:text-lg leading-tight text-slate-900 dark:text-white mb-1">
-                                ${p.nombre}
-                            </h3>
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="text-[10px] font-bold text-green-700 dark:text-green-200 uppercase tracking-widest">${calcularEdad(p.nacimiento)} AÑOS</span>
-                                <span class="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
-                                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider truncate">${p.hobby}</span>
-                            </div>
-                            <div class="flex items-center gap-2 mb-3">
-                                <span class="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
-                                <p class="text-[8px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider leading-none">Cumpleaños: ${formatearCumple(p.nacimiento)}
-                                </p>
-                            </div> 
-                            <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-medium italic">"${p.cita}"</p>
-                        </div>
-                    </article>
-                `;
+                // Ordenar por fecha (más reciente arriba)
+                transactions = cloudTransactions.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                
+                // Actualizar backup local
+                localStorage.setItem('farithsac_backup', JSON.stringify(transactions));
+                
+                updateUI();
+                renderTable();
+                hideLoading();
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                handleCloudError("Error de Permisos Firestore (Reglas)");
             });
         }
 
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.onclick = () => {
-                currentFilter = btn.dataset.filter;
-                document.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-950', 'dark:text-white', 'shadow-md');
-                    b.classList.add('text-slate-500');
-                });
-                btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-950', 'dark:text-white', 'shadow-md');
-                btn.classList.remove('text-slate-500');
-                render();
-            };
-        });
+        document.getElementById('mainForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
 
-        document.getElementById('searchInput').oninput = (e) => {
-            currentSearch = e.target.value;
-            render();
+            const type = document.getElementById('f_type').value;
+            const amount = parseFloat(document.getElementById('f_amount').value);
+
+            const newEntry = {
+                fecha: document.getElementById('f_date').value,
+                categoria: document.getElementById('f_category').value,
+                detalles: document.getElementById('f_details').value,
+                ingreso: type === 'ingreso' ? amount : 0,
+                gasto: type === 'gasto' ? amount : 0,
+                deuda: type === 'deuda' ? amount : 0,
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                if (currentUser && !isCloudDisabled) {
+                    const dataRef = collection(db, 'artifacts', appId, 'public', 'data', 'movimientos');
+                    await addDoc(dataRef, newEntry);
+                    showToast("¡REGISTRO CON ÉXITO!");
+                    e.target.reset(); // Limpiar campos solo si tuvo éxito
+                } else {
+                    // Si no hay nube, guardamos en local por seguridad
+                    saveLocally(newEntry);
+                    showToast("Guardado local (Sin conexión)");
+                    e.target.reset();
+                }
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                showToast("Error de conexión, guardado local", true);
+                saveLocally(newEntry);
+                e.target.reset();
+            } finally {
+                submitBtn.disabled = false;
+                setTimeout(() => switchTab('dashboard'), 800);
+            }
         };
 
-        function openZoom(url) {
-            const modal = document.getElementById('zoomModal');
-            const img = document.getElementById('modalImg');
-            img.src = url;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => img.classList.replace('scale-95', 'scale-100'), 50);
-            document.body.style.overflow = 'hidden';
+        function saveLocally(entry) {
+            entry.id = 'local_' + Date.now();
+            transactions.unshift(entry);
+            localStorage.setItem('farithsac_backup', JSON.stringify(transactions));
+            updateUI();
+            renderTable();
         }
 
-        document.getElementById('closeModal').onclick = () => {
-            const modal = document.getElementById('zoomModal');
-            const img = document.getElementById('modalImg');
-            img.classList.replace('scale-100', 'scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = 'auto';
-            }, 300); 
+        window.deleteItem = async (id) => {
+            if(!confirm("¿Eliminar este registro permanentemente?")) return;
+            
+            if (id.startsWith('local_')) {
+                transactions = transactions.filter(t => t.id !== id);
+                localStorage.setItem('farithsac_backup', JSON.stringify(transactions));
+                updateUI();
+                renderTable();
+                showToast("Registro local eliminado");
+                return;
+            }
+
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'movimientos', id));
+                showToast("Registro eliminado de la nube");
+            } catch (e) { 
+                showToast("Error al eliminar", true); 
+            }
         };
 
-        window.onload = () => {
-            actualizarContador();
-            render();
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            if (transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-10 text-center text-slate-400 italic">No hay registros disponibles.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(t => `
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="p-5 font-medium text-slate-500">${t.fecha || '---'}</td>
+                    <td class="p-5"><span class="px-3 py-1 bg-slate-100 rounded-lg font-bold text-[10px]">${t.categoria}</span></td>
+                    <td class="p-5 text-slate-700 max-w-xs truncate">${t.detalles}</td>
+                    <td class="p-5 text-right font-bold text-blue-600">${t.ingreso > 0 ? '$' + t.ingreso.toLocaleString() : '-'}</td>
+                    <td class="p-5 text-right font-bold text-rose-500">${t.gasto > 0 ? '$' + t.gasto.toLocaleString() : '-'}</td>
+                    <td class="p-5 text-right font-bold text-amber-600">${t.deuda > 0 ? '$' + t.deuda.toLocaleString() : '-'}</td>
+                    <td class="p-5 text-center">
+                        <button onclick="deleteItem('${t.id}')" class="opacity-0 group-hover:opacity-100 p-2 text-slate-300 hover:text-rose-500 transition-all">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function updateUI() {
+            const totals = transactions.reduce((acc, curr) => {
+                acc.ingresos += (curr.ingreso || 0);
+                acc.gastos += (curr.gasto || 0);
+                acc.deudas += (curr.deuda || 0);
+                return acc;
+            }, { ingresos: 0, gastos: 0, deudas: 0 });
+
+            document.getElementById('stat-ingresos').innerText = `$${totals.ingresos.toLocaleString()}`;
+            document.getElementById('stat-gastos').innerText = `$${totals.gastos.toLocaleString()}`;
+            document.getElementById('stat-deudas').innerText = `$${totals.deudas.toLocaleString()}`;
+            document.getElementById('stat-balance').innerText = `$${(totals.ingresos - totals.gastos).toLocaleString()}`;
+            updateCharts();
+        }
+
+        function setupCharts() {
+            const ctxMain = document.getElementById('chartMain').getContext('2d');
+            const ctxPie = document.getElementById('chartPie').getContext('2d');
+            chartMain = new Chart(ctxMain, {
+                type: 'line',
+                data: { labels: [], datasets: [
+                    { label: 'Debe', borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', fill: true, tension: 0.4, data: [] },
+                    { label: 'Haber', borderColor: '#f43f5e', backgroundColor: 'rgba(244, 63, 94, 0.1)', fill: true, tension: 0.4, data: [] }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            chartPie = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: { labels: [], datasets: [{ data: [], backgroundColor: ['#3b82f6', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '75%' }
+            });
+        }
+
+        function updateCharts() {
+            if(!chartMain || transactions.length === 0) return;
+            const last7 = [...transactions].reverse().slice(-7);
+            chartMain.data.labels = last7.map(t => t.fecha.substring(5));
+            chartMain.data.datasets[0].data = last7.map(t => t.ingreso);
+            chartMain.data.datasets[1].data = last7.map(t => t.gasto);
+            chartMain.update();
+            const cats = {};
+            transactions.filter(t => t.gasto > 0).forEach(t => { cats[t.categoria] = (cats[t.categoria] || 0) + t.gasto; });
+            chartPie.data.labels = Object.keys(cats);
+            chartPie.data.datasets[0].data = Object.values(cats);
+            chartPie.update();
+        }
+
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('nav-active');
+                b.classList.add('text-slate-400', 'hover:bg-slate-800');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById(`btn-${tabId}`).classList.add('nav-active');
+            const headers = { 'dashboard': 'Resumen General', 'forms': 'Nuevo Movimiento', 'data': 'Historial Cloud' };
+            document.getElementById('page-heading').innerText = headers[tabId];
+            lucide.createIcons();
         };
+
+        window.exportToExcel = () => {
+            if (transactions.length === 0) return;
+            const dataToExport = transactions.map(t => ({
+                FECHA: t.fecha, CATEGORIA: t.categoria, DETALLES: t.detalles,
+                DEBE: t.ingreso, HABER: t.gasto, DEUDAS: t.deuda
+            }));
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Libro1");
+            XLSX.writeFile(wb, "FarithSAC_Backup.xlsx");
+        };
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').className = isError ? 'bg-rose-500 p-1.5 rounded-full' : 'bg-emerald-500 p-1.5 rounded-full';
+            t.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 4000);
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 500);
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
